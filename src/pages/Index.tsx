@@ -72,8 +72,8 @@ const Index = () => {
           </div>
         ) : (
           <div className="flex w-full flex-col items-center gap-6">
-            <p className="text-2xl font-bold text-foreground">
-              {selectedType === "frangos" ? "🐔 Frangos" : "🥩 Carnes"}
+            <p className="text-2xl font-extrabold uppercase tracking-wide text-foreground">
+              {selectedType === "frangos" ? "Frangos" : "Carnes"}
             </p>
             <div className="flex w-full gap-8">
               <button
