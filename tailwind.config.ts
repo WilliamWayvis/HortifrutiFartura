@@ -47,6 +47,14 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        kiosk: {
+          green: "hsl(var(--kiosk-green))",
+          "green-light": "hsl(var(--kiosk-green-light))",
+          orange: "hsl(var(--kiosk-orange))",
+          "orange-light": "hsl(var(--kiosk-orange-light))",
+          priority: "hsl(var(--kiosk-priority))",
+          "priority-light": "hsl(var(--kiosk-priority-light))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
