@@ -55,6 +55,13 @@ export function generateTicketPDF({ code, label, priority }: TicketData) {
   doc.text("Aguarde ser chamado", centerX, 88, { align: "center" });
   doc.text("Obrigado pela preferência!", centerX, 93, { align: "center" });
 
-  // Auto-open PDF
-  doc.output("dataurlnewwindow");
+  // Open print dialog directly
+  const pdfBlob = doc.output("blob");
+  const url = URL.createObjectURL(pdfBlob);
+  const printWindow = window.open(url);
+  if (printWindow) {
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+  }
 }
