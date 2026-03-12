@@ -153,7 +153,7 @@ app.post('/reset', (req, res) => {
 // Serve frontend build
 app.use(express.static(join(__dirname, 'dist')));
 // SPA fallback — must come after all API routes
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(join(__dirname, 'dist', 'index.html'));
 });
 
