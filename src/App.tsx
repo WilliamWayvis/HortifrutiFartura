@@ -44,29 +44,3 @@ const App = () => {
 };
 
 export default App;
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <QueueProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/display" element={<Display />} />
-            <Route path="/display/frangos" element={<DisplayFrangos />} />
-            <Route path="/display/acougue" element={<DisplayCarnes />} />
-            <Route path="/display/carnes" element={<DisplayCarnes />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<ProtectedAdmin />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueueProvider>
-  </QueryClientProvider>
-);
-
-export default App;
