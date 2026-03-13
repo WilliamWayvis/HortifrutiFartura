@@ -89,9 +89,6 @@ const Index = () => {
                 <span className="text-4xl md:text-5xl font-black text-accent-foreground tracking-wide">
                   GERAL
                 </span>
-                <span className="mt-2 text-lg md:text-xl text-muted-foreground font-semibold">
-                  Atendimento comum
-                </span>
               </button>
               <button
                 onClick={() => generateTicket(true)}

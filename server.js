@@ -90,18 +90,19 @@ function callNextIn(list, typeHint) {
   if (list.length === 0) return null;
 
   const priorities = list.filter(i => i.priority);
-  const normals = list.filter(i => !i.priority);
 
   let mustCallPriority = false;
   if (typeHint && Object.prototype.hasOwnProperty.call(normalCallsSincePriority, typeHint)) {
     mustCallPriority = normalCallsSincePriority[typeHint] >= 3;
   }
 
+  // Se chegou no limite de 3 gerais seguidos e tem prioritário na fila, chama o prioritário mais antigo
   let next;
-  if (priorities.length > 0 && (mustCallPriority || normals.length === 0)) {
-    next = priorities[0];
+  if (priorities.length > 0 && mustCallPriority) {
+    next = priorities[0]; // mais antigo entre os prioritários
   } else {
-    next = normals[0] || priorities[0];
+    // Caso contrário, segue a ordem de chegada (FIFO) independente de ser prioritário ou geral
+    next = list[0];
   }
 
   const idx = queue.findIndex(i => i.id === next.id);
