@@ -2,17 +2,23 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "@/assets/fartura-logo.png";
 
+const ADMIN_USER = "master";
 const ADMIN_PASSWORD = "fartura2026";
 
-const AdminLogin = () => {
+interface Props {
+  onAuth: () => void;
+}
+
+const AdminLogin = ({ onAuth }: Props) => {
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_auth", "1");
+    if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
+      onAuth();
       navigate("/admin");
     } else {
       setError(true);
@@ -31,6 +37,17 @@ const AdminLogin = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
+            <label className="text-sm font-semibold text-foreground">Usuário</label>
+            <input
+              type="text"
+              value={username}
+              onChange={e => { setUsername(e.target.value); setError(false); }}
+              className="w-full rounded-xl border-2 border-input bg-background px-4 py-3 text-base outline-none focus:border-primary transition-colors"
+              placeholder="Digite o usuário"
+              autoFocus
+            />
+          </div>
+          <div className="space-y-1">
             <label className="text-sm font-semibold text-foreground">Senha</label>
             <input
               type="password"
@@ -38,10 +55,9 @@ const AdminLogin = () => {
               onChange={e => { setPassword(e.target.value); setError(false); }}
               className="w-full rounded-xl border-2 border-input bg-background px-4 py-3 text-base outline-none focus:border-primary transition-colors"
               placeholder="Digite a senha"
-              autoFocus
             />
             {error && (
-              <p className="text-sm text-red-500 font-semibold">Senha incorreta. Tente novamente.</p>
+              <p className="text-sm text-red-500 font-semibold">Usuário ou senha incorretos.</p>
             )}
           </div>
           <button
