@@ -573,15 +573,15 @@ const Admin = () => {
                 <p className="text-3xl font-black text-primary">{chartAverage.toFixed(1)} min</p>
               </div>
               <div className="h-64 w-full overflow-x-auto rounded-lg border bg-background p-3">
-                <div className="flex h-full min-w-[1200px] items-end gap-2">
+                <div className="flex h-full w-full items-end gap-1">
                   {chartData.map((item) => (
-                    <div key={item.label} className="flex min-w-[24px] flex-1 flex-col items-center h-full justify-end">
+                    <div key={item.label} className="flex flex-1 flex-col items-center h-full justify-end min-w-0">
                       <div
-                        className={item.count > 0 ? `w-4 rounded-t ${chartBarColor}` : "w-4 rounded-t bg-gray-200"}
+                        className={item.count > 0 ? `w-full rounded-t ${chartBarColor}` : "w-full rounded-t bg-gray-200"}
                         style={{ height: `${Math.max(4, (item.avg / maxChartAvg) * 100)}%` }}
                         title={`${item.label} - ${item.avg.toFixed(1)} min (${item.count} chamadas)`}
                       />
-                      <span className="mt-1 text-[10px] text-muted-foreground">{item.label}</span>
+                      <span className="mt-1 text-[9px] text-muted-foreground truncate w-full text-center">{item.label}</span>
                     </div>
                   ))}
                 </div>
