@@ -160,14 +160,14 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (relevantQueue.length === 0) return null;
 
     const priorities = relevantQueue.filter(item => item.priority);
-    const normals = relevantQueue.filter(item => !item.priority);
     const mustCallPriority = normalCallsSincePriority[type] >= 3;
 
-    if (priorities.length > 0 && (mustCallPriority || normals.length === 0)) {
+    // Mesma lógica do servidor: FIFO, exceto quando 3 gerais seguidos → prioritário mais antigo vai à frente
+    if (priorities.length > 0 && mustCallPriority) {
       return priorities[0];
     }
 
-    return normals[0] || priorities[0] || null;
+    return relevantQueue[0];
   };
 
   return (

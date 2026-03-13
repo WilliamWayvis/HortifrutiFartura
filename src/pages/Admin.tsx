@@ -427,7 +427,7 @@ const Admin = () => {
 
           <Card className="h-full flex flex-col">
             <CardHeader>
-              <CardTitle>Fila de Carnes ({carnesQueue.length})</CardTitle>
+              <CardTitle>Fila de Açougue ({carnesQueue.length})</CardTitle>
             </CardHeader>
             <CardContent className="flex-1">
               {carnesQueue.length === 0 ? (
@@ -443,7 +443,7 @@ const Admin = () => {
                         <span className="text-lg font-bold">{index + 1}.</span>
                         <span className="text-xl font-black">{item.code}</span>
                         <span className="text-sm font-medium">
-                          Carnes
+                          Açougue
                         </span>
                         {item.priority && (
                           <Badge variant="destructive">Prioritário</Badge>
@@ -500,7 +500,7 @@ const Admin = () => {
           <Card className="h-full flex flex-col border-red-300">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>📋 Histórico - Carnes</span>
+                <span>📋 Histórico - Açougue</span>
                 <Badge className="bg-red-100 text-red-800">
                   {carnesHistory.length} chamadas
                 </Badge>
