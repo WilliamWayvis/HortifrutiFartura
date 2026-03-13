@@ -41,20 +41,16 @@ const Display = () => {
           )}
         </div>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 h-14 overflow-hidden bg-black border-t-2 border-yellow-400 relative z-50">
-        {hasMarquee ? (
+      {hasMarquee && (
+        <div className="absolute bottom-0 left-0 right-0 h-14 overflow-hidden bg-black border-t-2 border-yellow-400 relative z-50">
           <div
             className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-white text-2xl font-bold"
             style={{ animation: `tv-marquee ${marqueeDuration}s linear infinite`, willChange: 'transform' }}
           >
             {marqueeText}
           </div>
-        ) : (
-          <div className="absolute inset-0 flex items-center px-4 text-sm font-semibold text-white/70">
-            Sem mensagem configurada
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

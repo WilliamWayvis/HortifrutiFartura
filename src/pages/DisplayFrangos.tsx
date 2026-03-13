@@ -179,11 +179,11 @@ const DisplayFrangos = () => {
           </div>
         </div>
       </div>
-      <div
-        className="h-14 flex-shrink-0 overflow-hidden border-t-2 border-yellow-400 flex items-center"
-        style={{ backgroundColor: marqueeBgColor || '#000000' }}
-      >
-        {hasMarquee ? (
+      {hasMarquee && (
+        <div
+          className="h-14 flex-shrink-0 overflow-hidden border-t-2 border-yellow-400 flex items-center"
+          style={{ backgroundColor: marqueeBgColor || '#000000' }}
+        >
           <span
             className="whitespace-nowrap text-2xl font-bold"
             style={{
@@ -197,10 +197,8 @@ const DisplayFrangos = () => {
           >
             {marqueeText}
           </span>
-        ) : (
-          <span className="px-4 text-sm font-semibold" style={{ color: marqueeFontColor || '#ffffff' }}>Sem mensagem configurada</span>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
