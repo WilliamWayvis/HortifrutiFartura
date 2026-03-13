@@ -572,7 +572,7 @@ const Admin = () => {
                 <p className="text-sm text-muted-foreground">{chartSubtitle}</p>
                 <p className="text-3xl font-black text-primary">{chartAverage.toFixed(1)} min</p>
               </div>
-              <div className="h-64 w-full overflow-x-auto rounded-lg border bg-background p-3">
+              <div className="h-64 w-full overflow-hidden rounded-lg border bg-background p-3">
                 <div className="flex h-full w-full items-end gap-1">
                   {chartData.map((item) => (
                     <div key={item.label} className="flex flex-1 flex-col items-center h-full justify-end min-w-0">
