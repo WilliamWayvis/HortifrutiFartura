@@ -101,12 +101,12 @@ const DisplayCarnes = () => {
   const carnesHistory = calledHistory.filter(i => i.type === 'carnes');
 
   return (
-    <div className="h-screen flex flex-col bg-white" onClick={!audioUnlocked ? unlockAudio : undefined}>
+    <div className="h-screen flex flex-col bg-white overflow-hidden" onClick={!audioUnlocked ? unlockAudio : undefined}>
       {!audioUnlocked && (
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/70 cursor-pointer">
-          <div className="bg-white rounded-2xl px-10 py-8 text-center shadow-2xl">
-            <p className="text-2xl font-black text-gray-800 mb-2">Toque para ativar o áudio</p>
-            <p className="text-base text-gray-500">Clique em qualquer lugar para habilitar som e voz</p>
+          <div className="bg-white rounded-2xl px-[5vw] py-[4vh] text-center shadow-2xl">
+            <p className="text-[2.5vw] font-black text-gray-800 mb-[1vh]">Toque para ativar o áudio</p>
+            <p className="text-[1.5vw] text-gray-500">Clique em qualquer lugar para habilitar som e voz</p>
           </div>
         </div>
       )}
@@ -116,30 +116,30 @@ const DisplayCarnes = () => {
           100% { transform: translateX(-100%); }
         }
       `}</style>
-      <div className="flex-1 min-h-0 p-6 flex gap-6 overflow-hidden">
-        <div className="w-[42%] min-w-0 bg-gray-50 rounded-2xl p-4 border-2 border-gray-300 flex flex-col">
-          <h3 className="text-4xl font-bold text-gray-700 mb-4 text-center">Ultimas Chamadas</h3>
-          <div className="space-y-3 h-full overflow-hidden">
+      <div className="flex-1 min-h-0 p-[2vw] flex gap-[2vw] overflow-hidden">
+        <div className="w-[42%] min-w-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col">
+          <h3 className="text-[2.5vw] font-bold text-gray-700 mb-[1.5vh] text-center">Ultimas Chamadas</h3>
+          <div className="space-y-[1vh] h-full overflow-hidden">
             {carnesHistory.length === 0 ? (
-              <p className="text-gray-400 text-center py-4">Nenhuma senha chamada</p>
+              <p className="text-gray-400 text-center py-[2vh]">Nenhuma senha chamada</p>
             ) : (
               carnesHistory.slice(0, 8).map((item) => (
                 <div
                   key={item.id}
-                  className={`p-4 rounded-lg text-center border-2 ${
+                  className={`p-[1.5%] rounded-lg text-center border-2 ${
                     item.priority
                       ? 'bg-blue-50 border-blue-300'
                       : 'bg-orange-50 border-orange-300'
                   }`}
                 >
                   <div
-                    className={`text-4xl font-black ${
+                    className={`text-[2.5vw] font-black ${
                       item.priority ? 'text-blue-700' : 'text-orange-700'
                     }`}
                   >
                     {item.code}
                   </div>
-                  <div className="text-base text-gray-500 mt-1">
+                  <div className="text-[1vw] text-gray-500 mt-1">
                     Chamada as {item.calledAt ? new Date(item.calledAt).toLocaleTimeString() : "--:--:--"}
                   </div>
                 </div>
@@ -148,43 +148,43 @@ const DisplayCarnes = () => {
           </div>
         </div>
 
-        <div className="w-[58%] min-w-0 flex flex-col gap-6">
+        <div className="w-[58%] min-w-0 flex flex-col gap-[2vh]">
           <div className="text-center">
-            <h1 className="text-7xl font-black text-gray-800 leading-none">AÇOUGUE</h1>
+            <h1 className="text-[5vw] font-black text-gray-800 leading-none">AÇOUGUE</h1>
           </div>
 
           <div
-            className={`rounded-2xl px-6 py-12 text-center flex-1 flex flex-col justify-center ${
+            className={`rounded-2xl px-[3%] py-[4vh] text-center flex-1 flex flex-col justify-center ${
               current && current.type === 'carnes' && current.priority
                 ? 'bg-blue-600'
                 : 'bg-orange-500'
             }`}
           >
-            <h2 className="text-3xl font-bold text-white mb-6">Senha</h2>
+            <h2 className="text-[2.5vw] font-bold text-white mb-[2vh]">Senha</h2>
             {current && current.type === 'carnes' ? (
-              <div className="text-[12rem] leading-none font-black text-white animate-pulse">
+              <div className="text-[15vw] leading-none font-black text-white animate-pulse">
                 {current.code}
               </div>
             ) : (
-              <div className="text-7xl font-black text-white/60">
+              <div className="text-[5vw] font-black text-white/60">
                 Aguardando...
               </div>
             )}
           </div>
 
-          <div className="rounded-2xl bg-yellow-400 px-6 py-5 text-center border-4 border-yellow-500 shadow-lg">
-            <p className="text-xl font-bold text-yellow-900 uppercase tracking-wider">⏱ Tempo médio de espera</p>
-            <p className="text-6xl font-black text-yellow-900 mt-1">{getAverageWaitTime('carnes')} min</p>
+          <div className="rounded-2xl bg-yellow-400 px-[3%] py-[2vh] text-center border-4 border-yellow-500 shadow-lg">
+            <p className="text-[1.5vw] font-bold text-yellow-900 uppercase tracking-wider">⏱ Tempo médio de espera</p>
+            <p className="text-[4.5vw] font-black text-yellow-900 mt-[0.5vh]">{getAverageWaitTime('carnes')} min</p>
           </div>
         </div>
       </div>
       {hasMarquee && (
         <div
-          className="h-14 flex-shrink-0 overflow-hidden border-t-2 border-yellow-400 flex items-center"
+          className="h-[6vh] flex-shrink-0 overflow-hidden border-t-2 border-yellow-400 flex items-center"
           style={{ backgroundColor: marqueeBgColor || '#000000' }}
         >
           <span
-            className="whitespace-nowrap text-2xl font-bold"
+            className="whitespace-nowrap font-bold"
             style={{
               display: 'inline-block',
               animation: `tv-marquee ${marqueeDuration}s linear infinite`,
