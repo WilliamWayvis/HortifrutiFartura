@@ -2,16 +2,22 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueueProvider } from "@/contexts/QueueContext";
 import Index from "./pages/Index";
 import Display from "./pages/Display";
 import DisplayFrangos from "./pages/DisplayFrangos";
 import DisplayCarnes from "./pages/DisplayCarnes";
 import Admin from "./pages/Admin";
+import AdminLogin from "./pages/AdminLogin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const ProtectedAdmin = () => {
+  const auth = sessionStorage.getItem("admin_auth");
+  return auth === "1" ? <Admin /> : <Navigate to="/admin/login" replace />;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -26,7 +32,8 @@ const App = () => (
             <Route path="/display/frangos" element={<DisplayFrangos />} />
             <Route path="/display/acougue" element={<DisplayCarnes />} />
             <Route path="/display/carnes" element={<DisplayCarnes />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<ProtectedAdmin />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
