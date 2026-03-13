@@ -87,7 +87,7 @@ const Index = () => {
                 className="flex flex-1 h-36 md:h-48 flex-col items-center justify-center rounded-2xl bg-accent shadow-lg transition-transform active:scale-95"
               >
                 <span className="text-4xl md:text-5xl font-black text-accent-foreground tracking-wide">
-                  NORMAL
+                  GERAL
                 </span>
                 <span className="mt-2 text-lg md:text-xl text-muted-foreground font-semibold">
                   Atendimento comum
@@ -100,8 +100,8 @@ const Index = () => {
                 <span className="text-4xl md:text-5xl font-black text-blue-600 tracking-wide">
                   PRIORITÁRIO
                 </span>
-                <span className="mt-2 text-lg md:text-xl text-muted-foreground font-semibold">
-                  Idosos, gestantes, PCDs, lactantes e autistas
+                <span className="mt-2 text-base md:text-lg text-muted-foreground font-semibold text-center leading-snug">
+                  Idosos, gestantes, PCDs,<br />lactantes e autistas
                 </span>
               </button>
             </div>
