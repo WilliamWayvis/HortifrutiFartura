@@ -95,9 +95,9 @@ const Index = () => {
               </button>
               <button
                 onClick={() => generateTicket(true)}
-                className="flex flex-1 h-36 md:h-48 flex-col items-center justify-center rounded-2xl border-2 border-kiosk-priority bg-kiosk-priority-light shadow-lg transition-transform active:scale-95"
+                className="flex flex-1 h-36 md:h-48 flex-col items-center justify-center rounded-2xl border-2 border-blue-600 bg-blue-50 shadow-lg transition-transform active:scale-95"
               >
-                <span className="text-4xl md:text-5xl font-black text-kiosk-priority tracking-wide">
+                <span className="text-4xl md:text-5xl font-black text-blue-600 tracking-wide">
                   PRIORITÁRIO
                 </span>
                 <span className="mt-2 text-lg md:text-xl text-muted-foreground font-semibold">
