@@ -101,7 +101,7 @@ const Index = () => {
                   PRIORITÁRIO
                 </span>
                 <span className="mt-2 text-lg md:text-xl text-muted-foreground font-semibold">
-                  Idosos, gestantes, PCDs
+                  Idosos, gestantes, PCDs, lactantes e autistas
                 </span>
               </button>
             </div>
