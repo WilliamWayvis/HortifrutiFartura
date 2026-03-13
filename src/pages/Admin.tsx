@@ -177,7 +177,7 @@ const Admin = () => {
               className="px-3 py-2 border rounded"
             >
               <option value="frangos">Frangos</option>
-              <option value="carnes">Carnes</option>
+              <option value="carnes">Açougue</option>
             </select>
             <label className="flex items-center gap-2">
               <input
@@ -304,7 +304,7 @@ const Admin = () => {
                     {current.code}
                   </div>
                   <div className="text-base font-semibold">
-                    {current.type === "frangos" ? "Frangos" : "Carnes"}
+                    {current.type === "frangos" ? "Frangos" : "Açougue"}
                     {current.priority && (
                       <Badge variant="secondary" className="ml-2">
                         Prioritário
@@ -356,7 +356,7 @@ const Admin = () => {
 
           <Card className="h-full flex flex-col border-red-400 bg-red-50">
             <CardHeader>
-              <CardTitle>⏭️ Chamar Próxima - Carnes</CardTitle>
+              <CardTitle>⏭️ Chamar Próxima - Açougue</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
               <Button
@@ -364,7 +364,7 @@ const Admin = () => {
                 disabled={carnesQueue.length === 0}
                 className="w-full h-20 text-2xl font-black rounded-xl bg-red-600 hover:bg-red-700"
               >
-                CHAMAR CARNES
+                CHAMAR AÇOUGUE
               </Button>
               <div className="bg-white p-3 rounded-lg border-2 border-red-300">
                 {carnesQueue.length > 0 ? (

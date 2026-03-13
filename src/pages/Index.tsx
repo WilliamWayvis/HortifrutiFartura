@@ -72,14 +72,14 @@ const Index = () => {
               className="flex flex-1 h-40 md:h-56 flex-col items-center justify-center rounded-2xl bg-primary shadow-lg transition-transform active:scale-95"
             >
               <span className="text-5xl md:text-6xl font-black text-primary-foreground tracking-wide">
-                CARNES
+                AÇOUGUE
               </span>
             </button>
           </div>
         ) : (
           <div className="flex w-full flex-col items-center gap-6">
             <p className="text-3xl md:text-4xl font-extrabold uppercase tracking-wide text-foreground">
-              {selectedType === "frangos" ? "Frangos" : "Carnes"}
+              {selectedType === "frangos" ? "Frangos" : "Açougue"}
             </p>
             <div className="flex w-full flex-col md:flex-row gap-4 md:gap-8">
               <button

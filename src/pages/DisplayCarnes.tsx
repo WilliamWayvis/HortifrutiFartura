@@ -73,7 +73,7 @@ const DisplayCarnes = () => {
           parts.push('Frango');
           parts.push(String(num));
         } else {
-          parts.push(isPriority ? 'Senha Preferencial Carnes' : 'Senha Carnes');
+          parts.push(isPriority ? 'Senha Preferencial Açougue' : 'Senha Açougue');
           parts.push(String(num));
         }
       } else {
@@ -150,7 +150,7 @@ const DisplayCarnes = () => {
 
         <div className="w-[58%] min-w-0 flex flex-col gap-6">
           <div className="text-center">
-            <h1 className="text-7xl font-black text-gray-800 leading-none">CARNES</h1>
+            <h1 className="text-7xl font-black text-gray-800 leading-none">AÇOUGUE</h1>
           </div>
 
           <div
@@ -172,9 +172,9 @@ const DisplayCarnes = () => {
             )}
           </div>
 
-          <div className="text-center py-2">
-            <p className="text-lg font-semibold text-gray-600">Tempo medio de espera</p>
-            <p className="text-3xl font-black text-gray-800">{getAverageWaitTime('carnes')} min</p>
+          <div className="rounded-2xl bg-yellow-400 px-6 py-5 text-center border-4 border-yellow-500 shadow-lg">
+            <p className="text-xl font-bold text-yellow-900 uppercase tracking-wider">⏱ Tempo médio de espera</p>
+            <p className="text-6xl font-black text-yellow-900 mt-1">{getAverageWaitTime('carnes')} min</p>
           </div>
         </div>
       </div>

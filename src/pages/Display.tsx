@@ -30,7 +30,7 @@ const Display = () => {
                 {current.code}
               </div>
               <div className="text-3xl font-bold text-foreground">
-                {current.type === "frangos" ? "Frangos" : "Carnes"}
+                {current.type === "frangos" ? "Frangos" : "Açougue"}
                 {current.priority && " - Prioritário"}
               </div>
             </div>
