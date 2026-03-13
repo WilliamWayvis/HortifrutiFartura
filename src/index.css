@@ -67,3 +67,28 @@
     user-select: none;
   }
 }
+
+@layer base {
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 14%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 14%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 142 55% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 80% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 222 47% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 30 80% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 142 55% 45%;
+    color-scheme: dark;
+  }
+}

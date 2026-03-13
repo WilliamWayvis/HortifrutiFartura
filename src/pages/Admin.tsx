@@ -15,6 +15,7 @@ const Admin = () => {
 
   const [newType, setNewType] = useState<'frangos' | 'carnes'>('frangos');
   const [newPriority, setNewPriority] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const [lastGenerated, setLastGenerated] = useState<string | null>(null);
   const [o2Range, setO2Range] = useState<'dia' | 'mes' | 'ano'>('dia');
   const [marqueeInput, setMarqueeInput] = useState('');
@@ -153,7 +154,7 @@ const Admin = () => {
   const nextCarnes = getNextToCall('carnes');
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className={`min-h-screen bg-background p-8${darkMode ? ' dark' : ''}`}>
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -162,9 +163,18 @@ const Admin = () => {
               Painel Administrativo
             </h1>
           </div>
-          <Button onClick={resetQueue} variant="destructive">
-            Resetar Fila
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => setDarkMode(!darkMode)}
+              variant="outline"
+              size="sm"
+            >
+              {darkMode ? '☀️ Claro' : '🌙 Escuro'}
+            </Button>
+            <Button onClick={resetQueue} variant="destructive">
+              Resetar Fila
+            </Button>
+          </div>
         </div>
 
         {/* manual ticket generator for kiosk-less testing */}
@@ -174,7 +184,7 @@ const Admin = () => {
             <select
               value={newType}
               onChange={e => setNewType(e.target.value as 'frangos' | 'carnes')}
-              className="px-3 py-2 border rounded"
+              className="px-3 py-2 border rounded bg-background text-foreground"
             >
               <option value="frangos">Frangos</option>
               <option value="carnes">Açougue</option>
@@ -206,12 +216,12 @@ const Admin = () => {
                 onChange={(e) => setMarqueeInput(e.target.value)}
                 placeholder="Ex: Não perca essa promoção!"
                 maxLength={220}
-                className="flex-1 rounded-md border px-3 py-2 text-base"
+                className="flex-1 rounded-md border px-3 py-2 text-base bg-background text-foreground"
               />
               <select
                 value={marqueeSpeedInput}
                 onChange={(e) => setMarqueeSpeedInput(Number(e.target.value))}
-                className="w-full md:w-28 rounded-md border px-3 py-2 text-base"
+                className="w-full md:w-28 rounded-md border px-3 py-2 text-base bg-background text-foreground"
                 title="Velocidade da rolagem"
               >
                 <option value={1}>1x</option>
@@ -244,7 +254,7 @@ const Admin = () => {
                 <select
                   value={marqueeFontInput}
                   onChange={(e) => setMarqueeFontInput(e.target.value)}
-                  className="rounded-md border px-3 py-1.5 text-base"
+                  className="rounded-md border px-3 py-1.5 text-base bg-background text-foreground"
                 >
                   <option value="sans-serif">Sans-serif</option>
                   <option value="serif">Serif</option>
@@ -264,7 +274,7 @@ const Admin = () => {
                   max={72}
                   value={marqueeFontSizeInput}
                   onChange={(e) => setMarqueeFontSizeInput(Math.min(72, Math.max(12, Number(e.target.value))))}
-                  className="w-20 rounded-md border px-3 py-1.5 text-base"
+                  className="w-20 rounded-md border px-3 py-1.5 text-base bg-background text-foreground"
                 />
                 <span className="text-xs text-muted-foreground">px</span>
               </label>
@@ -318,7 +328,7 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card className="h-full flex flex-col border-orange-400 bg-orange-50">
+          <Card className="h-full flex flex-col border-orange-400 bg-orange-50 dark:bg-gray-800 dark:border-orange-600">
             <CardHeader>
               <CardTitle>⏭️ Chamar Próxima - Frangos</CardTitle>
             </CardHeader>
@@ -331,7 +341,7 @@ const Admin = () => {
               >
                 CHAMAR FRANGOS
               </Button>
-              <div className="bg-white p-3 rounded-lg border-2 border-orange-300">
+              <div className="bg-white dark:bg-gray-700 p-3 rounded-lg border-2 border-orange-300">
                 {frangosQueue.length > 0 ? (
                   <>
                     <p className="text-xs text-muted-foreground mb-2">Próxima na fila:</p>
@@ -354,7 +364,7 @@ const Admin = () => {
             </CardContent>
           </Card>
 
-          <Card className="h-full flex flex-col border-red-400 bg-red-50">
+          <Card className="h-full flex flex-col border-red-400 bg-red-50 dark:bg-gray-800 dark:border-red-600">
             <CardHeader>
               <CardTitle>⏭️ Chamar Próxima - Açougue</CardTitle>
             </CardHeader>
@@ -366,7 +376,7 @@ const Admin = () => {
               >
                 CHAMAR AÇOUGUE
               </Button>
-              <div className="bg-white p-3 rounded-lg border-2 border-red-300">
+              <div className="bg-white dark:bg-gray-700 p-3 rounded-lg border-2 border-red-300">
                 {carnesQueue.length > 0 ? (
                   <>
                     <p className="text-xs text-muted-foreground mb-2">Próxima na fila:</p>
@@ -465,13 +475,13 @@ const Admin = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>📋 Histórico - Frangos</span>
-                <Badge className="bg-orange-100 text-orange-800">
+                <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
                   {frangosHistory.length} chamadas
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              <div className="bg-orange-50 p-4 rounded-lg border-2 border-orange-300">
+              <div className="bg-orange-50 dark:bg-orange-950 p-4 rounded-lg border-2 border-orange-300">
                 <p className="text-sm text-muted-foreground mb-1">⏱️ Tempo Médio de Espera</p>
                 <p className="text-3xl font-black text-orange-600">
                   {getAverageWaitTime('frangos').toFixed(1)}s
@@ -484,7 +494,7 @@ const Admin = () => {
                   {[...frangosHistory].reverse().slice(0, 10).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between p-3 bg-orange-100 rounded-lg text-sm"
+                      className="flex items-center justify-between p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg text-sm"
                     >
                       <span className="font-bold text-orange-700">{item.code}</span>
                       <span className="text-xs text-orange-600">
@@ -501,13 +511,13 @@ const Admin = () => {
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <span>📋 Histórico - Açougue</span>
-                <Badge className="bg-red-100 text-red-800">
+                <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                   {carnesHistory.length} chamadas
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              <div className="bg-red-50 p-4 rounded-lg border-2 border-red-300">
+              <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg border-2 border-red-300">
                 <p className="text-sm text-muted-foreground mb-1">⏱️ Tempo Médio de Espera</p>
                 <p className="text-3xl font-black text-red-600">
                   {getAverageWaitTime('carnes').toFixed(1)}s
@@ -520,7 +530,7 @@ const Admin = () => {
                   {[...carnesHistory].reverse().slice(0, 10).map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center justify-between p-3 bg-red-100 rounded-lg text-sm"
+                      className="flex items-center justify-between p-3 bg-red-100 dark:bg-red-900/30 rounded-lg text-sm"
                     >
                       <span className="font-bold text-red-700">{item.code}</span>
                       <span className="text-xs text-red-600">
@@ -577,7 +587,7 @@ const Admin = () => {
                   {chartData.map((item) => (
                     <div key={item.label} className="flex flex-1 flex-col items-center h-full justify-end min-w-0">
                       <div
-                        className={item.count > 0 ? `w-full rounded-t ${chartBarColor}` : "w-full rounded-t bg-gray-200"}
+                        className={item.count > 0 ? `w-full rounded-t ${chartBarColor}` : "w-full rounded-t bg-gray-200 dark:bg-gray-700"}
                         style={{ height: `${Math.max(4, (item.avg / maxChartAvg) * 100)}%` }}
                         title={`${item.label} - ${item.avg.toFixed(1)} min (${item.count} chamadas)`}
                       />
