@@ -5,6 +5,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import logo from "@/assets/fartura-logo.png";
 
+interface ReportData {
+  generatedAt: string;
+  date: string;
+  totalTickets: number;
+  frangosTotal: number;
+  carnesTotal: number;
+  frangosPriority: number;
+  carnesPriority: number;
+  avgWaitFrangos: number;
+  avgWaitCarnes: number;
+  avgWaitTotal: number;
+  peakHour: string;
+  peakHourCount: number;
+  hourlyData: Array<{ hour: string; count: number; avgWait: number }>;
+  firstTicketTime: string | null;
+  lastTicketTime: string | null;
+}
+
 const Admin = () => {
   const { queue, current, callNextFrangos, callNextCarnes, addToQueue, getNextNumber, resetQueue, calledHistory, getAverageWaitTime, getNextToCall, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize, setMarqueeMessage } = useQueue();
 
@@ -17,6 +35,9 @@ const Admin = () => {
   const [newPriority, setNewPriority] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [lastGenerated, setLastGenerated] = useState<string | null>(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [reportData, setReportData] = useState<ReportData | null>(null);
+  const [showReport, setShowReport] = useState(false);
   const [o2Range, setO2Range] = useState<'dia' | 'mes' | 'ano'>('dia');
   const [marqueeInput, setMarqueeInput] = useState('');
   const [marqueeSpeedInput, setMarqueeSpeedInput] = useState<number>(1);
@@ -41,6 +62,116 @@ const Admin = () => {
     await addToQueue({ code, type: newType, priority: newPriority });
     setLastGenerated(code);
     setTimeout(() => setLastGenerated(null), 3000);
+  };
+
+  const buildReport = (): ReportData => {
+    const valid = calledHistory.filter(item => item.calledAt && item.calledAt >= item.timestamp);
+    const frangos = valid.filter(i => i.type === 'frangos');
+    const carnes = valid.filter(i => i.type === 'carnes');
+
+    const avgMin = (items: typeof valid) => {
+      if (items.length === 0) return 0;
+      return items.reduce((s, i) => s + (i.calledAt! - i.timestamp), 0) / items.length / 1000 / 60;
+    };
+
+    const hourlyData = Array.from({ length: 24 }, (_, h) => {
+      const hItems = valid.filter(i => new Date(i.calledAt!).getHours() === h);
+      return { hour: `${h.toString().padStart(2, '0')}h`, count: hItems.length, avgWait: avgMin(hItems) };
+    });
+
+    const peakHourObj = hourlyData.reduce((a, b) => b.count > a.count ? b : a, hourlyData[0]);
+
+    const allTs = valid.map(i => i.timestamp);
+    const calledTs = valid.map(i => i.calledAt!);
+    const firstTicketTime = allTs.length > 0 ? new Date(Math.min(...allTs)).toLocaleTimeString('pt-BR') : null;
+    const lastTicketTime = calledTs.length > 0 ? new Date(Math.max(...calledTs)).toLocaleTimeString('pt-BR') : null;
+
+    return {
+      generatedAt: new Date().toLocaleString('pt-BR'),
+      date: new Date().toLocaleDateString('pt-BR'),
+      totalTickets: valid.length,
+      frangosTotal: frangos.length,
+      carnesTotal: carnes.length,
+      frangosPriority: frangos.filter(i => i.priority).length,
+      carnesPriority: carnes.filter(i => i.priority).length,
+      avgWaitFrangos: avgMin(frangos),
+      avgWaitCarnes: avgMin(carnes),
+      avgWaitTotal: avgMin(valid),
+      peakHour: peakHourObj?.hour ?? '-',
+      peakHourCount: peakHourObj?.count ?? 0,
+      hourlyData,
+      firstTicketTime,
+      lastTicketTime,
+    };
+  };
+
+  const formatReportText = (r: ReportData): string => {
+    const lines = [
+      '═══════════════════════════════════════════════',
+      '         RELATÓRIO DE EXPEDIENTE',
+      '         Hortifrúti Fartura',
+      '═══════════════════════════════════════════════',
+      `Data: ${r.date}`,
+      `Gerado em: ${r.generatedAt}`,
+      '',
+      '─── RESUMO GERAL ───────────────────────────────',
+      `Total de senhas atendidas : ${r.totalTickets}`,
+      `Frangos                   : ${r.frangosTotal} (${r.frangosPriority} prioritários)`,
+      `Açougue                   : ${r.carnesTotal} (${r.carnesPriority} prioritários)`,
+      '',
+      `Primeiro atendimento      : ${r.firstTicketTime ?? '-'}`,
+      `Último atendimento        : ${r.lastTicketTime ?? '-'}`,
+      '',
+      '─── TEMPO MÉDIO DE ESPERA ───────────────────────',
+      `Geral    : ${r.avgWaitTotal.toFixed(1)} min`,
+      `Frangos  : ${r.avgWaitFrangos.toFixed(1)} min`,
+      `Açougue  : ${r.avgWaitCarnes.toFixed(1)} min`,
+      '',
+      '─── HORÁRIO DE PICO ─────────────────────────────',
+      `Horário: ${r.peakHour}  (${r.peakHourCount} atendimentos)`,
+      '',
+      '─── DISTRIBUIÇÃO POR HORA ───────────────────────',
+      ...r.hourlyData
+        .filter(h => h.count > 0)
+        .map(h => `  ${h.hour}  →  ${h.count} atendimentos  |  Espera média: ${h.avgWait.toFixed(1)} min`),
+      '',
+      '═══════════════════════════════════════════════',
+    ];
+    return lines.join('\n');
+  };
+
+  const downloadReport = async (r: ReportData) => {
+    const text = formatReportText(r);
+    const fileName = `relatorio-expediente-${r.date.replace(/\//g, '-')}.txt`;
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await (window as any).showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{ description: 'Arquivo de Texto', accept: { 'text/plain': ['.txt'] } }],
+        });
+        const writable = await handle.createWritable();
+        await writable.write(text);
+        await writable.close();
+        return;
+      } catch {
+        // usuário cancelou o seletor — ignora
+      }
+    }
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleConfirmReset = async () => {
+    const report = buildReport();
+    setReportData(report);
+    await resetQueue();
+    setShowResetConfirm(false);
+    setShowReport(true);
   };
 
   const saveMarqueeMessage = async () => {
@@ -154,6 +285,7 @@ const Admin = () => {
   const nextCarnes = getNextToCall('carnes');
 
   return (
+    <>
     <div className={`min-h-screen bg-background text-foreground p-8${darkMode ? ' dark' : ''}`}>
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex items-center justify-between">
@@ -171,7 +303,7 @@ const Admin = () => {
             >
               {darkMode ? '☀️ Claro' : '🌙 Escuro'}
             </Button>
-            <Button onClick={resetQueue} variant="destructive">
+            <Button onClick={() => setShowResetConfirm(true)} variant="destructive">
               Resetar Fila
             </Button>
           </div>
@@ -604,6 +736,126 @@ const Admin = () => {
         </div>
       </div>
     </div>
+
+    {/* ── Modal de Confirmação de Reset ── */}
+    {showResetConfirm && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+        <div className="w-full max-w-md rounded-2xl bg-white dark:bg-gray-900 p-8 shadow-2xl space-y-6">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <span className="text-5xl">⚠️</span>
+            <h2 className="text-2xl font-black text-destructive">Resetar a Fila?</h2>
+            <p className="text-muted-foreground">
+              Tem certeza que deseja resetar a fila? Esta ação irá encerrar o expediente,
+              limpar todas as senhas pendentes e gerar um relatório do dia.
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setShowResetConfirm(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              className="flex-1 font-bold"
+              onClick={handleConfirmReset}
+            >
+              Sim, Resetar
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* ── Modal de Relatório Pós-Reset ── */}
+    {showReport && reportData && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+        <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-gray-900 p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <span className="text-5xl">📊</span>
+            <h2 className="text-2xl font-black text-primary">Relatório de Expediente</h2>
+            <p className="text-sm text-muted-foreground">{reportData.date} — Gerado às {reportData.generatedAt.split(' ')[1] ?? reportData.generatedAt}</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl bg-muted p-4 text-center">
+              <p className="text-xs text-muted-foreground mb-1">Total de Senhas</p>
+              <p className="text-3xl font-black text-primary">{reportData.totalTickets}</p>
+            </div>
+            <div className="rounded-xl bg-muted p-4 text-center">
+              <p className="text-xs text-muted-foreground mb-1">Espera Média Geral</p>
+              <p className="text-3xl font-black text-primary">{reportData.avgWaitTotal.toFixed(1)} min</p>
+            </div>
+            <div className="rounded-xl bg-orange-50 dark:bg-orange-950 border border-orange-200 p-4 text-center">
+              <p className="text-xs text-muted-foreground mb-1">Frangos</p>
+              <p className="text-2xl font-black text-orange-600">{reportData.frangosTotal}</p>
+              <p className="text-xs text-muted-foreground">{reportData.frangosPriority} prioritários</p>
+              <p className="text-xs text-orange-500 mt-1">⏱ {reportData.avgWaitFrangos.toFixed(1)} min</p>
+            </div>
+            <div className="rounded-xl bg-red-50 dark:bg-red-950 border border-red-200 p-4 text-center">
+              <p className="text-xs text-muted-foreground mb-1">Açougue</p>
+              <p className="text-2xl font-black text-red-600">{reportData.carnesTotal}</p>
+              <p className="text-xs text-muted-foreground">{reportData.carnesPriority} prioritários</p>
+              <p className="text-xs text-red-500 mt-1">⏱ {reportData.avgWaitCarnes.toFixed(1)} min</p>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-muted p-4 space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Primeiro atendimento</span>
+              <span className="font-semibold">{reportData.firstTicketTime ?? '-'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Último atendimento</span>
+              <span className="font-semibold">{reportData.lastTicketTime ?? '-'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Horário de pico</span>
+              <span className="font-semibold">{reportData.peakHour} ({reportData.peakHourCount} atend.)</span>
+            </div>
+          </div>
+
+          {reportData.hourlyData.some(h => h.count > 0) && (
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Distribuição por hora</p>
+              <div className="space-y-1 max-h-40 overflow-y-auto pr-1">
+                {reportData.hourlyData.filter(h => h.count > 0).map(h => (
+                  <div key={h.hour} className="flex items-center gap-3 text-sm">
+                    <span className="w-10 font-mono text-muted-foreground">{h.hour}</span>
+                    <div className="flex-1 bg-muted rounded-full h-2 overflow-hidden">
+                      <div
+                        className="bg-primary h-2 rounded-full"
+                        style={{ width: `${Math.min(100, (h.count / (reportData.peakHourCount || 1)) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="w-20 text-right text-xs text-muted-foreground">{h.count} · {h.avgWait.toFixed(1)} min</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setShowReport(false)}
+            >
+              Fechar
+            </Button>
+            <Button
+              className="flex-1 font-bold"
+              onClick={() => downloadReport(reportData)}
+            >
+              💾 Salvar Relatório
+            </Button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 
