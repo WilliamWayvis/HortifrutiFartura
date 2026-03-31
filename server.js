@@ -134,13 +134,32 @@ app.post('/call/frangos', (req, res) => {
   broadcast();
   res.json(called);
 });
+app.get('/call/frangos', (req, res) => {
+  const list = queue.filter(i => i.type === 'frangos');
+  const called = callNextIn(list, 'frangos');
+  broadcast();
+  res.json(called);
+});
+
 app.post('/call/carnes', (req, res) => {
   const list = queue.filter(i => i.type === 'carnes');
   const called = callNextIn(list, 'carnes');
   broadcast();
   res.json(called);
 });
+app.get('/call/carnes', (req, res) => {
+  const list = queue.filter(i => i.type === 'carnes');
+  const called = callNextIn(list, 'carnes');
+  broadcast();
+  res.json(called);
+});
+
 app.post('/call/next', (req, res) => {
+  const called = callNextIn(queue);
+  broadcast();
+  res.json(called);
+});
+app.get('/call/next', (req, res) => {
   const called = callNextIn(queue);
   broadcast();
   res.json(called);
