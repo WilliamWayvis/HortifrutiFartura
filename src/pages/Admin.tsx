@@ -26,17 +26,7 @@ interface ReportData {
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  if (!isAuthenticated) {
-    return <AdminLogin onAuth={() => setIsAuthenticated(true)} />;
-  }
-
   const { queue, current, callNextFrangos, callNextCarnes, addToQueue, getNextNumber, resetQueue, calledHistory, getAverageWaitTime, getNextToCall, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize, setMarqueeMessage } = useQueue();
-
-  const frangosQueue = queue.filter(item => item.type === 'frangos');
-  const carnesQueue = queue.filter(item => item.type === 'carnes');
-  const frangosHistory = calledHistory.filter(item => item.type === 'frangos');
-  const carnesHistory = calledHistory.filter(item => item.type === 'carnes');
 
   const [newType, setNewType] = useState<'frangos' | 'carnes'>('frangos');
   const [newPriority, setNewPriority] = useState(false);
@@ -53,6 +43,11 @@ const Admin = () => {
   const [marqueeFontInput, setMarqueeFontInput] = useState('sans-serif');
   const [marqueeFontSizeInput, setMarqueeFontSizeInput] = useState<number>(24);
 
+  const frangosQueue = queue.filter(item => item.type === 'frangos');
+  const carnesQueue = queue.filter(item => item.type === 'carnes');
+  const frangosHistory = calledHistory.filter(item => item.type === 'frangos');
+  const carnesHistory = calledHistory.filter(item => item.type === 'carnes');
+
   useEffect(() => {
     setMarqueeInput(marqueeMessage || '');
     setMarqueeSpeedInput(marqueeSpeed || 1);
@@ -61,6 +56,10 @@ const Admin = () => {
     setMarqueeFontInput(marqueeFont || 'sans-serif');
     setMarqueeFontSizeInput(marqueeFontSize || 24);
   }, [marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize]);
+
+  if (!isAuthenticated) {
+    return <AdminLogin onAuth={() => setIsAuthenticated(true)} />;
+  }
 
   const generateManualTicket = async () => {
     const prefix = newType === 'frangos' ? 'F' : 'C';
