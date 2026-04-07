@@ -148,7 +148,7 @@ const DisplayCarnes = () => {
           {/* BLOCO SUPERIOR: Proximas Senhas */}
           <div className="flex-1 min-h-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col overflow-hidden">
             <h3 style={{ fontSize: 'clamp(16px,2.5vw,34px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Próximas Senhas</h3>
-            <div className="flex-1 min-h-0 flex flex-col gap-[1%]">
+            <div className="flex-1 min-h-0 flex flex-col gap-[2%] overflow-y-auto">
               {carnesQueue.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
                   <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(10px,1.5vw,18px)' }}>Nenhuma senha na fila</p>
@@ -157,7 +157,7 @@ const DisplayCarnes = () => {
                 carnesQueue.slice(0, 5).map((item, idx) => (
                   <div
                     key={item.id}
-                    className={`flex-1 min-h-0 flex items-center gap-[2%] rounded-lg border-2 px-[3%] overflow-hidden ${
+                    className={`flex-shrink-0 flex items-center gap-[2%] rounded-lg border-2 px-[3%] py-[2%] ${
                       item.priority ? 'bg-blue-50 border-blue-300' : 'bg-red-50 border-red-300'
                     }`}
                   >
@@ -185,7 +185,7 @@ const DisplayCarnes = () => {
           {/* BLOCO INFERIOR: Ultimas Chamadas */}
           <div className="flex-1 min-h-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col overflow-hidden">
             <h3 style={{ fontSize: 'clamp(16px,2.5vw,34px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Últimas Chamadas</h3>
-            <div className="flex-1 min-h-0 flex flex-col gap-[1%]">
+            <div className="flex-1 min-h-0 flex flex-col gap-[2%] overflow-y-auto">
               {carnesHistory.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
                   <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(10px,1.5vw,18px)' }}>Nenhuma senha chamada</p>
@@ -194,7 +194,7 @@ const DisplayCarnes = () => {
                 carnesHistory.slice(0, 5).map((item) => (
                   <div
                     key={item.id}
-                    className={`flex-1 min-h-0 flex flex-col items-center justify-center rounded-lg border-2 overflow-hidden ${
+                    className={`flex-shrink-0 flex flex-col items-center py-[2%] rounded-lg border-2 ${
                       item.priority ? 'bg-blue-50 border-blue-300' : 'bg-red-50 border-red-300'
                     }`}
                   >
