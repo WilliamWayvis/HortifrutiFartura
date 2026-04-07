@@ -653,7 +653,7 @@ const Admin = () => {
               <div className="bg-orange-50 dark:bg-orange-950 p-4 rounded-lg border-2 border-orange-300">
                 <p className="text-sm text-muted-foreground mb-1">⏱️ Tempo Médio de Espera</p>
                 <p className="text-3xl font-black text-orange-600">
-                  {getAverageWaitTime('frangos').toFixed(1)}s
+                  {getAverageWaitTime('frangos') ?? '—'}
                 </p>
               </div>
               {frangosHistory.length === 0 ? (
@@ -689,7 +689,7 @@ const Admin = () => {
               <div className="bg-red-50 dark:bg-red-950 p-4 rounded-lg border-2 border-red-300">
                 <p className="text-sm text-muted-foreground mb-1">⏱️ Tempo Médio de Espera</p>
                 <p className="text-3xl font-black text-red-600">
-                  {getAverageWaitTime('carnes').toFixed(1)}s
+                  {getAverageWaitTime('carnes') ?? '—'}
                 </p>
               </div>
               {carnesHistory.length === 0 ? (
