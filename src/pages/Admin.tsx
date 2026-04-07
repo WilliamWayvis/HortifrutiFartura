@@ -410,6 +410,7 @@ const Admin = () => {
                   <option value="sans-serif">Sans-serif</option>
                   <option value="serif">Serif</option>
                   <option value="monospace">Monospace</option>
+                  <option value="Montserrat">Montserrat (padrão do app)</option>
                   <option value="Arial">Arial</option>
                   <option value="Georgia">Georgia</option>
                   <option value="Courier New">Courier New</option>

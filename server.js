@@ -41,7 +41,7 @@ app.get('/events', (req, res) => {
   res.flushHeaders();
   clients.push(res);
   // send initial state
-  res.write(`data: ${JSON.stringify({ queue, current, history, counters, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont })}\n\n`);
+  res.write(`data: ${JSON.stringify({ queue, current, history, counters, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize })}\n\n`);
   req.on('close', () => {
     const idx = clients.indexOf(res);
     if (idx !== -1) clients.splice(idx, 1);
@@ -67,7 +67,7 @@ app.post('/battery', (req, res) => {
 });
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
-const ALLOWED_FONTS = ['sans-serif', 'serif', 'monospace', 'Arial', 'Georgia', 'Courier New', 'Impact', 'Trebuchet MS'];
+const ALLOWED_FONTS = ['sans-serif', 'serif', 'monospace', 'Arial', 'Georgia', 'Courier New', 'Impact', 'Trebuchet MS', 'Montserrat'];
 
 app.post('/marquee', (req, res) => {
   const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
