@@ -26,7 +26,20 @@ interface ReportData {
 
 const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const { queue, current, callNextFrangos, callNextCarnes, addToQueue, getNextNumber, resetQueue, calledHistory, getAverageWaitTime, getNextToCall, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize, setMarqueeMessage } = useQueue();
+  const { queue, current, callNextFrangos, callNextCarnes, addToQueue, getNextNumber, resetQueue, calledHistory, getAverageWaitTime, getNextToCall, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize, setMarqueeMessage, buttonBattery } = useQueue();
+
+  const getBatteryIcon = (level: number | null) => {
+    if (level === null) return '🔋❓';
+    if (level >= 75) return '🔋';
+    if (level >= 40) return '🪫';
+    return '⚠️';
+  };
+  const getBatteryColor = (level: number | null) => {
+    if (level === null) return 'text-gray-400';
+    if (level >= 50) return 'text-green-600';
+    if (level >= 20) return 'text-yellow-600';
+    return 'text-red-600';
+  };
 
   const [newType, setNewType] = useState<'frangos' | 'carnes'>('frangos');
   const [newPriority, setNewPriority] = useState(false);
@@ -499,6 +512,15 @@ const Admin = () => {
                 <p className="text-xs text-muted-foreground">Pessoas na fila</p>
                 <p className="text-3xl font-black text-orange-500">{frangosQueue.length}</p>
               </div>
+              <div className="text-center bg-white dark:bg-gray-700 p-2 rounded-lg border border-orange-200">
+                <p className="text-xs text-muted-foreground">Botão Frangos</p>
+                <p className={`text-xl font-black ${getBatteryColor(buttonBattery?.frangos ?? null)}`}>
+                  {getBatteryIcon(buttonBattery?.frangos ?? null)} {buttonBattery?.frangos !== null && buttonBattery?.frangos !== undefined ? `${buttonBattery.frangos}%` : 'Sem dados'}
+                </p>
+                {buttonBattery?.lastSeenFrangos && (
+                  <p className="text-[10px] text-gray-400">Último sinal: {new Date(buttonBattery.lastSeenFrangos).toLocaleTimeString('pt-BR')}</p>
+                )}
+              </div>
             </CardContent>
           </Card>
 
@@ -533,6 +555,15 @@ const Admin = () => {
               <div className="text-center">
                 <p className="text-xs text-muted-foreground">Pessoas na fila</p>
                 <p className="text-3xl font-black text-red-500">{carnesQueue.length}</p>
+              </div>
+              <div className="text-center bg-white dark:bg-gray-700 p-2 rounded-lg border border-red-200">
+                <p className="text-xs text-muted-foreground">Botão Açougue</p>
+                <p className={`text-xl font-black ${getBatteryColor(buttonBattery?.carnes ?? null)}`}>
+                  {getBatteryIcon(buttonBattery?.carnes ?? null)} {buttonBattery?.carnes !== null && buttonBattery?.carnes !== undefined ? `${buttonBattery.carnes}%` : 'Sem dados'}
+                </p>
+                {buttonBattery?.lastSeenCarnes && (
+                  <p className="text-[10px] text-gray-400">Último sinal: {new Date(buttonBattery.lastSeenCarnes).toLocaleTimeString('pt-BR')}</p>
+                )}
               </div>
             </CardContent>
           </Card>

@@ -26,10 +26,11 @@ let marqueeBgColor = '#000000';
 let marqueeFontColor = '#ffffff';
 let marqueeFont = 'sans-serif';
 let marqueeFontSize = 24;
+let buttonBattery = { frangos: null, carnes: null, lastSeenFrangos: null, lastSeenCarnes: null };
 
 const clients = [];
 function broadcast() {
-  const payload = { queue, current, history, counters, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize };
+  const payload = { queue, current, history, counters, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize, buttonBattery };
   clients.forEach(res => res.write(`data: ${JSON.stringify(payload)}\n\n`));
 }
 
@@ -48,7 +49,21 @@ app.get('/events', (req, res) => {
 });
 
 app.get('/state', (req, res) => {
-  res.json({ queue, current, history, counters, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize });
+  res.json({ queue, current, history, counters, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize, buttonBattery });
+});
+
+// Endpoint para ESP8266/ESP32 reportar nivel de bateria
+// POST /battery  body: { device: 'frangos'|'carnes', level: 0-100 }
+app.post('/battery', (req, res) => {
+  const device = req.body?.device;
+  const level = Number(req.body?.level);
+  if ((device !== 'frangos' && device !== 'carnes') || !Number.isFinite(level) || level < 0 || level > 100) {
+    return res.status(400).json({ error: 'device (frangos|carnes) e level (0-100) sao obrigatorios' });
+  }
+  buttonBattery[device] = Math.round(level);
+  buttonBattery[device === 'frangos' ? 'lastSeenFrangos' : 'lastSeenCarnes'] = Date.now();
+  broadcast();
+  res.json({ ok: true });
 });
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
@@ -131,6 +146,12 @@ function callNextIn(list, typeHint) {
 app.post('/call/frangos', (req, res) => {
   const list = queue.filter(i => i.type === 'frangos');
   const called = callNextIn(list, 'frangos');
+  // atualiza bateria se enviada junto com a chamada
+  const lvl = Number(req.body?.battery);
+  if (Number.isFinite(lvl) && lvl >= 0 && lvl <= 100) {
+    buttonBattery.frangos = Math.round(lvl);
+    buttonBattery.lastSeenFrangos = Date.now();
+  }
   broadcast();
   res.json(called);
 });
@@ -144,6 +165,12 @@ app.get('/call/frangos', (req, res) => {
 app.post('/call/carnes', (req, res) => {
   const list = queue.filter(i => i.type === 'carnes');
   const called = callNextIn(list, 'carnes');
+  // atualiza bateria se enviada junto com a chamada
+  const lvl = Number(req.body?.battery);
+  if (Number.isFinite(lvl) && lvl >= 0 && lvl <= 100) {
+    buttonBattery.carnes = Math.round(lvl);
+    buttonBattery.lastSeenCarnes = Date.now();
+  }
   broadcast();
   res.json(called);
 });

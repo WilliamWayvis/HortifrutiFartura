@@ -20,6 +20,7 @@ interface QueueContextType {
   marqueeFontColor: string;
   marqueeFont: string;
   marqueeFontSize: number;
+  buttonBattery: { frangos: number | null; carnes: number | null; lastSeenFrangos: number | null; lastSeenCarnes: number | null };
   addToQueue: (item: Omit<QueueItem, 'id' | 'timestamp'>) => Promise<void>;
   callNext: () => Promise<void>;
   callNextFrangos: () => Promise<void>;
@@ -59,6 +60,7 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [marqueeFontColor, setMarqueeFontColor] = useState<string>('#ffffff');
   const [marqueeFont, setMarqueeFont] = useState<string>('sans-serif');
   const [marqueeFontSize, setMarqueeFontSize] = useState<number>(24);
+  const [buttonBattery, setButtonBattery] = useState<{ frangos: number | null; carnes: number | null; lastSeenFrangos: number | null; lastSeenCarnes: number | null }>({ frangos: null, carnes: null, lastSeenFrangos: null, lastSeenCarnes: null });
 
   // bootstrap from server state and subscribe to updates
   useEffect(() => {
@@ -81,6 +83,7 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (s.marqueeFontColor) setMarqueeFontColor(s.marqueeFontColor);
         if (s.marqueeFont) setMarqueeFont(s.marqueeFont);
         if (typeof s.marqueeFontSize === 'number') setMarqueeFontSize(s.marqueeFontSize);
+        if (s.buttonBattery) setButtonBattery(s.buttonBattery);
       });
 
     const es = new EventSource(`${base}/events`);
@@ -102,6 +105,7 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (s.marqueeFontColor) setMarqueeFontColor(s.marqueeFontColor);
       if (s.marqueeFont) setMarqueeFont(s.marqueeFont);
       if (typeof s.marqueeFontSize === 'number') setMarqueeFontSize(s.marqueeFontSize);
+      if (s.buttonBattery) setButtonBattery(s.buttonBattery);
     };
     return () => es.close();
   }, []);
@@ -182,6 +186,7 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       marqueeFontColor,
       marqueeFont,
       marqueeFontSize,
+      buttonBattery,
       addToQueue,
       callNext,
       callNextFrangos,
