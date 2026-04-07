@@ -254,12 +254,14 @@ const DisplayCarnes = () => {
 
         {/* COLUNA DIREITA */}
         <div className="w-[58%] min-w-0 flex flex-col gap-[2vh]">
+          <div className="text-center flex-shrink-0">
+            <h1 style={{ fontSize: 'clamp(2rem,6vw,6rem)' }} className="font-black text-gray-900 leading-none">AÇOUGUE</h1>
+          </div>
           <div
             className={`rounded-2xl px-[3%] text-center flex-1 min-h-0 flex flex-col justify-center overflow-hidden ${
               displayCurrent?.priority ? 'bg-blue-600' : 'bg-red-600'
             }`}
           >
-            <h1 style={{ fontSize: 'clamp(1rem,3vw,3rem)' }} className="font-black text-white/80 leading-none mb-[1%]">AÇOUGUE</h1>
             <h2 style={{ fontSize: 'clamp(12px,2.5vw,28px)' }} className="font-bold text-white mb-[1%]">Senha</h2>
             {displayCurrent ? (
               <div style={{ fontSize: 'clamp(2rem,12vw,10rem)', lineHeight: 1 }} className="font-black text-white animate-pulse">
