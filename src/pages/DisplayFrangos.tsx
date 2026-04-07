@@ -125,7 +125,7 @@ const DisplayFrangos = () => {
   const displayCurrent = current?.type === 'frangos' ? current : null;
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden" onClick={!audioUnlocked ? unlockAudio : undefined}>
+    <div className="h-screen flex flex-col bg-white overflow-hidden" style={{ fontFamily: "'Nunito', 'Rounded Mplus 1c', ui-rounded, sans-serif" }} onClick={!audioUnlocked ? unlockAudio : undefined}>
       <div
         onClick={e => { e.stopPropagation(); toggleFullscreen(); }}
         style={{ position: 'absolute', top: 0, right: 0, width: '60px', height: '60px', zIndex: 9999, cursor: 'default', opacity: 0 }}

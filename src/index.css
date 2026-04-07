@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
 @layer base {
   :root {
@@ -61,10 +61,14 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Nunito', 'Rounded Mplus 1c', ui-rounded, sans-serif;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    /* Suavização de fonte para TVs (WebKit/Tizen) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
