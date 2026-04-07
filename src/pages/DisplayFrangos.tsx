@@ -48,6 +48,27 @@ const preloadAudio = () => {
   ALL_AUDIO_SRCS.forEach(src => fetchAndDecode(src));
 };
 
+// Beep puro via oscilador — funciona sem arquivos MP3, garantido em qualquer browser
+const playBeep = (): Promise<void> => {
+  return new Promise(resolve => {
+    try {
+      const ctx = getAudioCtx();
+      if (ctx.state === 'suspended') { ctx.resume().catch(() => {}); }
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      gain.gain.setValueAtTime(0.6, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
+      osc.onended = () => resolve();
+    } catch { resolve(); }
+  });
+};
+
 const playAudioSequence = async (files: string[]): Promise<void> => {
   try {
     const ctx = getAudioCtx();
@@ -119,7 +140,10 @@ const DisplayFrangos = () => {
       files.push(match[1] === 'F' ? '/audio/frases/frango.mp3' : '/audio/frases/acougue.mp3');
       String(num).split('').forEach(d => files.push(`/audio/chars/${d}.mp3`));
     }
-    if (files.length > 0) playAudioSequence(files);
+    // toca beep imediatamente, depois a voz
+    playBeep().then(() => {
+      if (files.length > 0) playAudioSequence(files);
+    });
   };
 
   useEffect(() => {
