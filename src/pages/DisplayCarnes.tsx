@@ -94,7 +94,7 @@ const playAudioSequence = async (files: string[]): Promise<void> => {
 };
 
 const DisplayCarnes = () => {
-  const { queue, current, calledHistory, getAverageWaitTime, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize } = useQueue();
+  const { queue, current, calledHistory, getAverageWaitTime, getAverageServiceTime, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize } = useQueue();
   const lastAnnouncedId = useRef<string | null>(null);
   const pendingCode = useRef<string | null>(null);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
@@ -254,14 +254,12 @@ const DisplayCarnes = () => {
 
         {/* COLUNA DIREITA */}
         <div className="w-[58%] min-w-0 flex flex-col gap-[2vh]">
-          <div className="text-center flex-shrink-0">
-            <h1 style={{ fontSize: 'clamp(1.5rem,5vw,5rem)' }} className="font-black text-gray-800 leading-none">AÇOUGUE</h1>
-          </div>
           <div
             className={`rounded-2xl px-[3%] text-center flex-1 min-h-0 flex flex-col justify-center overflow-hidden ${
               displayCurrent?.priority ? 'bg-blue-600' : 'bg-red-600'
             }`}
           >
+            <h1 style={{ fontSize: 'clamp(1rem,3vw,3rem)' }} className="font-black text-white/80 leading-none mb-[1%]">AÇOUGUE</h1>
             <h2 style={{ fontSize: 'clamp(12px,2.5vw,28px)' }} className="font-bold text-white mb-[1%]">Senha</h2>
             {displayCurrent ? (
               <div style={{ fontSize: 'clamp(2rem,12vw,10rem)', lineHeight: 1 }} className="font-black text-white animate-pulse">
@@ -275,6 +273,12 @@ const DisplayCarnes = () => {
             <p style={{ fontSize: 'clamp(10px,1.5vw,18px)' }} className="font-bold text-yellow-900 uppercase tracking-wider">Tempo médio de espera</p>
             <p style={{ fontSize: 'clamp(1.5rem,4.5vw,4rem)' }} className="font-black text-yellow-900 mt-[0.5vh]">
               {getAverageWaitTime('carnes') ?? '0 min'}
+            </p>
+          </div>
+          <div className="flex-shrink-0 rounded-2xl bg-yellow-400 px-[3%] py-[2vh] text-center border-4 border-yellow-500 shadow-lg">
+            <p style={{ fontSize: 'clamp(10px,1.5vw,18px)' }} className="font-bold text-yellow-900 uppercase tracking-wider">Tempo médio de atendimento</p>
+            <p style={{ fontSize: 'clamp(1.5rem,4.5vw,4rem)' }} className="font-black text-yellow-900 mt-[0.5vh]">
+              {getAverageServiceTime('carnes') ?? '---'}
             </p>
           </div>
         </div>

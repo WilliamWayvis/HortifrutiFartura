@@ -29,6 +29,7 @@ interface QueueContextType {
   setMarqueeMessage: (message: string, speed?: number, bgColor?: string, fontColor?: string, font?: string, fontSize?: number) => Promise<void>;
   getNextNumber: (type: 'frangos' | 'carnes') => Promise<string>;
   getAverageWaitTime: (type: 'frangos' | 'carnes') => string | null;
+  getAverageServiceTime: (type: 'frangos' | 'carnes') => string | null;
   getNextToCall: (type: 'frangos' | 'carnes') => QueueItem | null;
 }
 
@@ -165,6 +166,24 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return `${avgMin} min`;
   };;
 
+  const getAverageServiceTime = (type: 'frangos' | 'carnes') => {
+    const items = calledHistory
+      .filter(item => item.type === type && item.calledAt)
+      .sort((a, b) => a.calledAt! - b.calledAt!);
+    if (items.length < 2) return null;
+    let total = 0;
+    for (let i = 1; i < items.length; i++) {
+      total += items[i].calledAt! - items[i - 1].calledAt!;
+    }
+    const avgMs = total / (items.length - 1);
+    const avgMin = Math.round(avgMs / 1000 / 60);
+    if (avgMin < 1) {
+      const avgSec = Math.round(avgMs / 1000);
+      return avgSec <= 0 ? null : `${avgSec}s`;
+    }
+    return `${avgMin} min`;
+  };
+
   const getNextToCall = (type: 'frangos' | 'carnes') => {
     const relevantQueue = queue.filter(item => item.type === type);
     if (relevantQueue.length === 0) return null;
@@ -201,6 +220,7 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setMarqueeMessage,
       getNextNumber,
       getAverageWaitTime,
+      getAverageServiceTime,
       getNextToCall
     }}>
       {children}
