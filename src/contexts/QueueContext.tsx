@@ -142,11 +142,21 @@ export const QueueProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const setMarqueeMessage = async (message: string, speed?: number, bgColor?: string, fontColor?: string, font?: string, fontSize?: number) => {
     const safeSpeed = typeof speed === 'number' ? Math.min(4, Math.max(1, Math.round(speed))) : undefined;
     const safeSize = typeof fontSize === 'number' ? Math.min(72, Math.max(12, Math.round(fontSize))) : undefined;
-    await fetch(`${base}/marquee`, {
+    const res = await fetch(`${base}/marquee`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, speed: safeSpeed, bgColor, fontColor, font, fontSize: safeSize }),
     });
+    // Atualiza estado local imediatamente com o retorno do servidor (sem esperar SSE)
+    if (res.ok) {
+      const data = await res.json();
+      setMarqueeMessageState(data.marqueeMessage ?? '');
+      if (typeof data.marqueeSpeed === 'number') setMarqueeSpeed(data.marqueeSpeed);
+      if (data.marqueeBgColor) setMarqueeBgColor(data.marqueeBgColor);
+      if (data.marqueeFontColor) setMarqueeFontColor(data.marqueeFontColor);
+      if (data.marqueeFont) setMarqueeFont(data.marqueeFont);
+      if (typeof data.marqueeFontSize === 'number') setMarqueeFontSize(data.marqueeFontSize);
+    }
   };
 
   const getAverageWaitTime = (type: 'frangos' | 'carnes') => {

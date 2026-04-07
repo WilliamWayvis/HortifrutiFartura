@@ -440,9 +440,16 @@ const Admin = () => {
                 className="h-12 overflow-hidden rounded flex items-center"
                 style={{ backgroundColor: marqueeBgInput }}
               >
+                <style>{`@keyframes admin-marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }`}</style>
                 <span
-                  className="whitespace-nowrap font-bold px-4"
-                  style={{ color: marqueeFontColorInput, fontFamily: marqueeFontInput, fontSize: `${marqueeFontSizeInput}px` }}
+                  className="whitespace-nowrap font-bold"
+                  style={{
+                    color: marqueeFontColorInput,
+                    fontFamily: marqueeFontInput,
+                    fontSize: `${marqueeFontSizeInput}px`,
+                    display: 'inline-block',
+                    animation: `admin-marquee ${18 / Math.max(1, marqueeSpeedInput)}s linear infinite`,
+                  }}
                 >
                   {marqueeInput}
                 </span>
