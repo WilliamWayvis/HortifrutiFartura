@@ -255,19 +255,21 @@ const DisplayCarnes = () => {
         {/* COLUNA DIREITA */}
         <div className="w-[58%] min-w-0 flex flex-col gap-[2vh]">
           <div
-            className={`rounded-2xl px-[3%] pt-[3%] pb-[3%] text-center flex-1 min-h-0 flex flex-col justify-center overflow-hidden ${
+            className={`rounded-2xl px-[3%] pt-[3%] pb-[3%] text-center flex-1 min-h-0 flex flex-col justify-start overflow-hidden ${
               displayCurrent?.priority ? 'bg-blue-600' : 'bg-red-600'
             }`}
           >
             <h1 style={{ fontSize: 'clamp(1.8rem,5vw,5rem)', marginBottom: '2%' }} className="font-black text-gray-900 leading-none">AÇOUGUE</h1>
-            <h2 style={{ fontSize: 'clamp(12px,2.5vw,28px)' }} className="font-bold text-white mb-[1%]">Senha</h2>
-            {displayCurrent ? (
-              <div style={{ fontSize: 'clamp(2rem,12vw,10rem)', lineHeight: 1 }} className="font-black text-white animate-pulse">
-                {displayCurrent.code}
-              </div>
-            ) : (
-              <div style={{ fontSize: 'clamp(1.5rem,5vw,4rem)' }} className="font-black text-white/60">Aguardando...</div>
-            )}
+            <div className="flex-1 min-h-0 flex flex-col items-center justify-center">
+              <h2 style={{ fontSize: 'clamp(12px,2.5vw,28px)' }} className="font-bold text-white mb-[1%]">Senha</h2>
+              {displayCurrent ? (
+                <div style={{ fontSize: 'clamp(2rem,12vw,10rem)', lineHeight: 1 }} className="font-black text-white animate-pulse">
+                  {displayCurrent.code}
+                </div>
+              ) : (
+                <div style={{ fontSize: 'clamp(1.5rem,5vw,4rem)' }} className="font-black text-white/60">Aguardando...</div>
+              )}
+            </div>
           </div>
           <div className="flex-shrink-0 rounded-2xl bg-yellow-400 px-[3%] py-[2vh] text-center border-4 border-yellow-500 shadow-lg">
             <p style={{ fontSize: 'clamp(10px,1.5vw,18px)' }} className="font-bold text-yellow-900 uppercase tracking-wider">Tempo médio de espera</p>
