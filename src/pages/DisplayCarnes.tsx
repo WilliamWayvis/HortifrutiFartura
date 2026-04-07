@@ -11,32 +11,29 @@ interface QueueItem {
 
 import { useQueue } from "@/contexts/QueueContext";
 
+const playAudioSequence = async (files: string[]) => {
+  for (const file of files) {
+    await new Promise<void>((resolve) => {
+      const a = new Audio(file);
+      a.onended = () => resolve();
+      a.onerror = () => resolve();
+      a.play().catch(() => resolve());
+    });
+  }
+};
+
 const DisplayCarnes = () => {
   const { current, calledHistory, getAverageWaitTime, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize } = useQueue();
   const lastAnnouncedId = useRef<string | null>(null);
-  const audioCtxRef = useRef<AudioContext | null>(null);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const marqueeText = (marqueeMessage || "").trim();
   const hasMarquee = marqueeText.length > 0;
   const marqueeDuration = 18 / Math.max(1, Math.min(4, marqueeSpeed || 1));
 
   const unlockAudio = () => {
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioCtx();
-      }
-      audioCtxRef.current.resume().then(() => {
-        if ("speechSynthesis" in window) {
-          const u = new SpeechSynthesisUtterance("");
-          u.volume = 0;
-          window.speechSynthesis.speak(u);
-        }
-        setAudioUnlocked(true);
-      });
-    } catch (e) {
-      setAudioUnlocked(true);
-    }
+    const a = new Audio('/audio/frases/senha.mp3');
+    a.volume = 0;
+    a.play().then(() => { a.pause(); setAudioUnlocked(true); }).catch(() => setAudioUnlocked(true));
   };
 
   const toggleFullscreen = () => {
@@ -47,63 +44,24 @@ const DisplayCarnes = () => {
     }
   };
 
-  const playBeep = () => {
-    try {
-      const ctx = audioCtxRef.current;
-      if (!ctx || ctx.state === "suspended") return;
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = 'sine';
-      o.frequency.setValueAtTime(880, ctx.currentTime);
-      o.connect(g);
-      g.connect(ctx.destination);
-      g.gain.setValueAtTime(0.8, ctx.currentTime);
-      o.start();
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
-      o.stop(ctx.currentTime + 0.6);
-    } catch (e) {
-      console.log('Audio not available');
-    }
-  };
-
   const speakPassword = (code: string) => {
-    try {
-      if (!("speechSynthesis" in window)) return;
-      const synth = window.speechSynthesis;
-      synth.cancel();
-      const match = code.match(/^([FC])(P?)(\d+)$/);
-      const parts: string[] = [];
-      if (match) {
-        const isPriority = match[2] === 'P';
-        const num = parseInt(match[3], 10);
-        if (match[1] === 'F') {
-          parts.push(isPriority ? 'Senha Preferencial' : 'Senha');
-          parts.push('Frango');
-          parts.push(String(num));
-        } else {
-          parts.push(isPriority ? 'Senha Preferencial Açougue' : 'Senha Açougue');
-          parts.push(String(num));
-        }
-      } else {
-        parts.push(`Senha ${code}`);
-      }
-      const u = new SpeechSynthesisUtterance(parts.join(' '));
-      u.lang = 'pt-BR';
-      u.rate = 0.95;
-      u.pitch = 1;
-      u.volume = 1;
-      synth.speak(u);
-    } catch (e) {
-      console.log("Voice synthesis not available");
+    const match = code.match(/^([FC])(P?)(\d+)$/);
+    const files: string[] = [];
+    if (match) {
+      const isPriority = match[2] === 'P';
+      const num = parseInt(match[3], 10);
+      files.push(isPriority ? '/audio/frases/senha-preferencial.mp3' : '/audio/frases/senha.mp3');
+      files.push(match[1] === 'F' ? '/audio/frases/frango.mp3' : '/audio/frases/acougue.mp3');
+      String(num).split('').forEach(d => files.push(`/audio/chars/${d}.mp3`));
     }
+    if (files.length > 0) playAudioSequence(files);
   };
 
   useEffect(() => {
     if (!current || current.type !== "carnes") return;
     if (lastAnnouncedId.current === current.id) return;
     lastAnnouncedId.current = current.id;
-    playBeep();
-    setTimeout(() => speakPassword(current.code), 700);
+    speakPassword(current.code);
   }, [current?.id]);
 
   const carnesHistory = calledHistory.filter(i => i.type === 'carnes');
