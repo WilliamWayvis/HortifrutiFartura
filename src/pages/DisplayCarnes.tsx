@@ -75,6 +75,7 @@ const playAudioSequence = async (files: string[]): Promise<void> => {
 const DisplayCarnes = () => {
   const { queue, current, calledHistory, getAverageWaitTime, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize } = useQueue();
   const lastAnnouncedId = useRef<string | null>(null);
+  const pendingCode = useRef<string | null>(null);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const marqueeText = (marqueeMessage || "").trim();
   const hasMarquee = marqueeText.length > 0;
@@ -83,7 +84,15 @@ const DisplayCarnes = () => {
   const unlockAudio = () => {
     try {
       const ctx = getAudioCtx();
-      ctx.resume().then(() => { setAudioUnlocked(true); preloadAudio(); });
+      ctx.resume().then(() => {
+        setAudioUnlocked(true);
+        preloadAudio();
+        // toca áudio pendente se houver
+        if (pendingCode.current) {
+          speakPassword(pendingCode.current);
+          pendingCode.current = null;
+        }
+      });
     } catch { setAudioUnlocked(true); }
   };
 
@@ -112,8 +121,13 @@ const DisplayCarnes = () => {
     if (!current || current.type !== "carnes") return;
     if (lastAnnouncedId.current === current.id) return;
     lastAnnouncedId.current = current.id;
-    speakPassword(current.code);
-  }, [current?.id]);
+    if (!audioUnlocked) {
+      // guarda para tocar quando o usuário clicar
+      pendingCode.current = current.code;
+    } else {
+      speakPassword(current.code);
+    }
+  }, [current?.id, audioUnlocked]);
 
   const carnesQueue = queue.filter(i => i.type === 'carnes');
   const carnesHistory = calledHistory.filter(i => i.type === 'carnes');
