@@ -152,51 +152,64 @@ const DisplayFrangos = () => {
 
           {/* BLOCO SUPERIOR: Proximas Senhas */}
           <div className="flex-1 min-h-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col overflow-hidden">
-            <h3 className="text-[2vw] font-bold text-gray-700 mb-[1vh] text-center flex-shrink-0">Proximas Senhas</h3>
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <h3 style={{ fontSize: 'clamp(12px,2vw,26px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Próximas Senhas</h3>
+            <div className="flex-1 min-h-0 flex flex-col gap-[1%]">
               {frangosQueue.length === 0 ? (
-                <p className="text-gray-400 text-center py-[2vh]">Nenhuma senha na fila</p>
-              ) : (
-                <div className="grid gap-[0.8vh] h-full content-start">
-                  {frangosQueue.slice(0, 6).map((item, idx) => (
-                    <div
-                      key={item.id}
-                      className={`px-[3%] py-[1%] rounded-lg flex items-center gap-[1vw] border-2 ${
-                        item.priority ? 'bg-blue-50 border-blue-300' : 'bg-orange-50 border-orange-300'
-                      }`}
-                    >
-                      <span className={`text-[1.1vw] font-bold ${idx === 0 ? 'text-green-600' : 'text-gray-400'}`}>
-                        {idx === 0 ? 'Proxima' : `${idx + 1}o`}
-                      </span>
-                      <span className={`text-[2.2vw] font-black ${item.priority ? 'text-blue-700' : 'text-orange-700'}`}>
-                        {item.code}
-                      </span>
-                      {item.priority && <span className="text-[1vw] text-blue-500 ml-auto">Pref.</span>}
-                    </div>
-                  ))}
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(10px,1.5vw,18px)' }}>Nenhuma senha na fila</p>
                 </div>
+              ) : (
+                frangosQueue.slice(0, 5).map((item, idx) => (
+                  <div
+                    key={item.id}
+                    className={`flex-1 min-h-0 flex items-center gap-[2%] rounded-lg border-2 px-[3%] overflow-hidden ${
+                      item.priority ? 'bg-blue-50 border-blue-300' : 'bg-orange-50 border-orange-300'
+                    }`}
+                  >
+                    <span
+                      style={{ fontSize: 'clamp(8px,0.9vw,13px)', flexShrink: 0 }}
+                      className={`font-bold ${idx === 0 ? 'text-green-600' : 'text-gray-400'}`}
+                    >
+                      {idx === 0 ? 'Próxima' : `${idx + 1}º`}
+                    </span>
+                    <span
+                      style={{ fontSize: 'clamp(14px,2.2vw,28px)' }}
+                      className={`font-black ${item.priority ? 'text-blue-700' : 'text-orange-700'}`}
+                    >
+                      {item.code}
+                    </span>
+                    {item.priority && (
+                      <span style={{ fontSize: 'clamp(8px,0.9vw,12px)' }} className="text-blue-500 ml-auto flex-shrink-0">Pref.</span>
+                    )}
+                  </div>
+                ))
               )}
             </div>
           </div>
 
           {/* BLOCO INFERIOR: Ultimas Chamadas */}
           <div className="flex-1 min-h-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col overflow-hidden">
-            <h3 className="text-[2vw] font-bold text-gray-700 mb-[1vh] text-center flex-shrink-0">Ultimas Chamadas</h3>
-            <div className="flex-1 min-h-0 grid gap-[0.8vh] content-start overflow-hidden">
+            <h3 style={{ fontSize: 'clamp(12px,2vw,26px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Últimas Chamadas</h3>
+            <div className="flex-1 min-h-0 flex flex-col gap-[1%]">
               {frangosHistory.length === 0 ? (
-                <p className="text-gray-400 text-center py-[2vh]">Nenhuma senha chamada</p>
+                <div className="flex-1 flex items-center justify-center">
+                  <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(10px,1.5vw,18px)' }}>Nenhuma senha chamada</p>
+                </div>
               ) : (
-                frangosHistory.slice(0, 6).map((item) => (
+                frangosHistory.slice(0, 5).map((item) => (
                   <div
                     key={item.id}
-                    className={`p-[1.5%] rounded-lg text-center border-2 ${
+                    className={`flex-1 min-h-0 flex flex-col items-center justify-center rounded-lg border-2 overflow-hidden ${
                       item.priority ? 'bg-blue-50 border-blue-300' : 'bg-orange-50 border-orange-300'
                     }`}
                   >
-                    <div className={`text-[2.2vw] font-black ${item.priority ? 'text-blue-700' : 'text-orange-700'}`}>
+                    <div
+                      style={{ fontSize: 'clamp(14px,2.2vw,28px)', lineHeight: 1.1 }}
+                      className={`font-black ${item.priority ? 'text-blue-700' : 'text-orange-700'}`}
+                    >
                       {item.code}
                     </div>
-                    <div className="text-[0.9vw] text-gray-500">
+                    <div style={{ fontSize: 'clamp(8px,0.85vw,11px)' }} className="text-gray-500">
                       {item.calledAt ? new Date(item.calledAt).toLocaleTimeString() : '--:--:--'}
                     </div>
                   </div>
@@ -208,26 +221,26 @@ const DisplayFrangos = () => {
 
         {/* COLUNA DIREITA */}
         <div className="w-[58%] min-w-0 flex flex-col gap-[2vh]">
-          <div className="text-center">
-            <h1 className="text-[5vw] font-black text-gray-800 leading-none">FRANGOS</h1>
+          <div className="text-center flex-shrink-0">
+            <h1 style={{ fontSize: 'clamp(1.5rem,5vw,5rem)' }} className="font-black text-gray-800 leading-none">FRANGOS</h1>
           </div>
           <div
-            className={`rounded-2xl px-[3%] py-[4vh] text-center flex-1 flex flex-col justify-center ${
+            className={`rounded-2xl px-[3%] text-center flex-1 min-h-0 flex flex-col justify-center overflow-hidden ${
               displayCurrent?.priority ? 'bg-blue-600' : 'bg-orange-500'
             }`}
           >
-            <h2 className="text-[2.5vw] font-bold text-white mb-[2vh]">Senha</h2>
+            <h2 style={{ fontSize: 'clamp(12px,2.5vw,28px)' }} className="font-bold text-white mb-[1%]">Senha</h2>
             {displayCurrent ? (
-              <div className="text-[15vw] leading-none font-black text-white animate-pulse">
+              <div style={{ fontSize: 'clamp(2rem,12vw,10rem)', lineHeight: 1 }} className="font-black text-white animate-pulse">
                 {displayCurrent.code}
               </div>
             ) : (
-              <div className="text-[5vw] font-black text-white/60">Aguardando...</div>
+              <div style={{ fontSize: 'clamp(1.5rem,5vw,4rem)' }} className="font-black text-white/60">Aguardando...</div>
             )}
           </div>
-          <div className="rounded-2xl bg-yellow-400 px-[3%] py-[2vh] text-center border-4 border-yellow-500 shadow-lg">
-            <p className="text-[1.5vw] font-bold text-yellow-900 uppercase tracking-wider">Tempo medio de espera</p>
-            <p className="text-[4.5vw] font-black text-yellow-900 mt-[0.5vh]">
+          <div className="flex-shrink-0 rounded-2xl bg-yellow-400 px-[3%] py-[2vh] text-center border-4 border-yellow-500 shadow-lg">
+            <p style={{ fontSize: 'clamp(10px,1.5vw,18px)' }} className="font-bold text-yellow-900 uppercase tracking-wider">Tempo médio de espera</p>
+            <p style={{ fontSize: 'clamp(1.5rem,4.5vw,4rem)' }} className="font-black text-yellow-900 mt-[0.5vh]">
               {getAverageWaitTime('frangos') ?? '0 min'}
             </p>
           </div>
