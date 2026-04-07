@@ -39,6 +39,14 @@ const DisplayCarnes = () => {
     }
   };
 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
+
   const playBeep = () => {
     try {
       const ctx = audioCtxRef.current;
@@ -102,6 +110,11 @@ const DisplayCarnes = () => {
 
   return (
     <div className="h-screen flex flex-col bg-white overflow-hidden" onClick={!audioUnlocked ? unlockAudio : undefined}>
+      {/* Botão invisível para fullscreen — canto superior direito */}
+      <div
+        onClick={e => { e.stopPropagation(); toggleFullscreen(); }}
+        style={{ position: 'absolute', top: 0, right: 0, width: '60px', height: '60px', zIndex: 9999, cursor: 'default', opacity: 0 }}
+      />
       {!audioUnlocked && (
         <div className="absolute inset-0 z-[100] flex items-center justify-center bg-black/70 cursor-pointer">
           <div className="bg-white rounded-2xl px-[5vw] py-[4vh] text-center shadow-2xl">

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import logo from "@/assets/fartura-logo.png";
+import AdminLogin from "./AdminLogin";
 
 interface ReportData {
   generatedAt: string;
@@ -24,6 +25,12 @@ interface ReportData {
 }
 
 const Admin = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  if (!isAuthenticated) {
+    return <AdminLogin onAuth={() => setIsAuthenticated(true)} />;
+  }
+
   const { queue, current, callNextFrangos, callNextCarnes, addToQueue, getNextNumber, resetQueue, calledHistory, getAverageWaitTime, getNextToCall, normalCallsSincePriority, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize, setMarqueeMessage } = useQueue();
 
   const frangosQueue = queue.filter(item => item.type === 'frangos');
