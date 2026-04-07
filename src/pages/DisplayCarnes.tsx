@@ -189,7 +189,7 @@ const DisplayCarnes = () => {
             <div className="flex-1 min-h-0 flex flex-col gap-[2%] overflow-y-auto">
               {carnesQueue.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
-                  <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(10px,1.5vw,18px)' }}>Nenhuma senha na fila</p>
+                  <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(14px,2vw,24px)' }}>Nenhuma senha na fila</p>
                 </div>
               ) : (
                 carnesQueue.slice(0, 5).map((item, idx) => (
@@ -226,7 +226,7 @@ const DisplayCarnes = () => {
             <div className="flex-1 min-h-0 flex flex-col gap-[2%] overflow-y-auto">
               {carnesHistory.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
-                  <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(10px,1.5vw,18px)' }}>Nenhuma senha chamada</p>
+                  <p className="text-gray-400 text-center" style={{ fontSize: 'clamp(14px,2vw,24px)' }}>Nenhuma senha chamada</p>
                 </div>
               ) : (
                 carnesHistory.slice(0, 5).map((item) => (
@@ -242,7 +242,7 @@ const DisplayCarnes = () => {
                     >
                       {item.code}
                     </div>
-                    <div style={{ fontSize: 'clamp(8px,0.85vw,11px)' }} className="text-gray-500">
+                    <div style={{ fontSize: 'clamp(11px,1.2vw,16px)' }} className="text-gray-500">
                       {item.calledAt ? new Date(item.calledAt).toLocaleTimeString() : '--:--:--'}
                     </div>
                   </div>
@@ -260,7 +260,7 @@ const DisplayCarnes = () => {
             }`}
           >
             <h1 style={{ fontSize: 'clamp(1.8rem,5vw,5rem)', marginBottom: '2%' }} className="font-black text-gray-900 leading-none">AÇOUGUE</h1>
-            <div className="flex-1 min-h-0 flex flex-col items-center justify-center">
+            <div className="flex-1 min-h-0 flex flex-col items-center justify-start mt-[8%]">
               <h2 style={{ fontSize: 'clamp(12px,2.5vw,28px)' }} className="font-bold text-white mb-[1%]">Senha</h2>
               {displayCurrent ? (
                 <div style={{ fontSize: 'clamp(2rem,12vw,10rem)', lineHeight: 1 }} className="font-black text-white animate-pulse">
