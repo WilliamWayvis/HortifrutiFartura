@@ -401,24 +401,6 @@ const Admin = () => {
                 />
               </label>
               <label className="flex items-center gap-2 text-sm font-medium">
-                Fonte
-                <select
-                  value={marqueeFontInput}
-                  onChange={(e) => setMarqueeFontInput(e.target.value)}
-                  className="rounded-md border px-3 py-1.5 text-base bg-background text-foreground"
-                >
-                  <option value="sans-serif">Sans-serif</option>
-                  <option value="serif">Serif</option>
-                  <option value="monospace">Monospace</option>
-                  <option value="Montserrat">Montserrat (padrão do app)</option>
-                  <option value="Arial">Arial</option>
-                  <option value="Georgia">Georgia</option>
-                  <option value="Courier New">Courier New</option>
-                  <option value="Impact">Impact</option>
-                  <option value="Trebuchet MS">Trebuchet MS</option>
-                </select>
-              </label>
-              <label className="flex items-center gap-2 text-sm font-medium">
                 Tamanho
                 <input
                   type="number"
