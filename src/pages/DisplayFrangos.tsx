@@ -259,14 +259,12 @@ const DisplayFrangos = () => {
 
         {/* COLUNA DIREITA */}
         <div className="w-[58%] min-w-0 flex flex-col gap-[2vh]">
-          <div className="text-center flex-shrink-0">
-            <h1 style={{ fontSize: 'clamp(2rem,6vw,6rem)' }} className="font-black text-gray-900 leading-none">FRANGOS</h1>
-          </div>
           <div
-            className={`rounded-2xl px-[3%] text-center flex-1 min-h-0 flex flex-col justify-center overflow-hidden ${
+            className={`rounded-2xl px-[3%] pt-[3%] pb-[3%] text-center flex-1 min-h-0 flex flex-col justify-center overflow-hidden ${
               displayCurrent?.priority ? 'bg-blue-600' : 'bg-orange-500'
             }`}
           >
+            <h1 style={{ fontSize: 'clamp(1.8rem,5vw,5rem)', marginBottom: '2%' }} className="font-black text-gray-900 leading-none">FRANGOS</h1>
             <h2 style={{ fontSize: 'clamp(12px,2.5vw,28px)' }} className="font-bold text-white mb-[1%]">Senha</h2>
             {displayCurrent ? (
               <div style={{ fontSize: 'clamp(2rem,12vw,10rem)', lineHeight: 1 }} className="font-black text-white animate-pulse">
