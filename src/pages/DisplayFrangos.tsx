@@ -11,19 +11,81 @@ interface QueueItem {
 
 import { useQueue } from "@/contexts/QueueContext";
 
-const playAudioSequence = async (files: string[]) => {
-  for (const file of files) {
-    await new Promise<void>((resolve) => {
-      const a = new Audio(file);
-      a.onended = () => resolve();
-      a.onerror = () => resolve();
-      a.play().catch(() => resolve());
-    });
+// AudioContext compartilhado — criado uma vez após interação do usuário
+let sharedAudioCtx: AudioContext | null = null;
+// Cache de AudioBuffers decodificados — evita re-decode a cada chamada
+const decodedCache = new Map<string, AudioBuffer>();
+
+const ALL_AUDIO_SRCS = [
+  '/audio/frases/senha.mp3',
+  '/audio/frases/senha-preferencial.mp3',
+  '/audio/frases/frango.mp3',
+  '/audio/frases/acougue.mp3',
+  ...Array.from({ length: 10 }, (_, i) => `/audio/chars/${i}.mp3`),
+];
+
+const getAudioCtx = (): AudioContext => {
+  if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+    const AC = window.AudioContext || (window as any).webkitAudioContext;
+    sharedAudioCtx = new AC();
+  }
+  return sharedAudioCtx;
+};
+
+const fetchAndDecode = async (src: string): Promise<AudioBuffer | null> => {
+  if (decodedCache.has(src)) return decodedCache.get(src)!;
+  try {
+    const ctx = getAudioCtx();
+    const res = await fetch(src);
+    const arrayBuf = await res.arrayBuffer();
+    const decoded = await ctx.decodeAudioData(arrayBuf);
+    decodedCache.set(src, decoded);
+    return decoded;
+  } catch {
+    return null;
   }
 };
 
+const preloadAudio = () => {
+  ALL_AUDIO_SRCS.forEach(src => fetchAndDecode(src));
+};
+
+// Concatena todos os buffers e toca como um único áudio — zero gap entre palavras
+const playAudioSequence = async (files: string[]): Promise<void> => {
+  try {
+    const ctx = getAudioCtx();
+    if (ctx.state === 'suspended') await ctx.resume();
+
+    const buffers = await Promise.all(files.map(fetchAndDecode));
+    const valid = buffers.filter((b): b is AudioBuffer => b !== null);
+    if (valid.length === 0) return;
+
+    const numChannels = valid[0].numberOfChannels;
+    const sampleRate = valid[0].sampleRate;
+    const totalLength = valid.reduce((sum, b) => sum + b.length, 0);
+    const combined = ctx.createBuffer(numChannels, totalLength, sampleRate);
+
+    for (let c = 0; c < numChannels; c++) {
+      const out = combined.getChannelData(c);
+      let offset = 0;
+      for (const buf of valid) {
+        out.set(buf.getChannelData(Math.min(c, buf.numberOfChannels - 1)), offset);
+        offset += buf.length;
+      }
+    }
+
+    const source = ctx.createBufferSource();
+    source.buffer = combined;
+    source.connect(ctx.destination);
+    await new Promise<void>(resolve => {
+      source.onended = () => resolve();
+      source.start(0);
+    });
+  } catch { /* silently fail */ }
+};
+
 const DisplayFrangos = () => {
-  const { current, calledHistory, getAverageWaitTime, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize } = useQueue();
+  const { queue, current, calledHistory, getAverageWaitTime, marqueeMessage, marqueeSpeed, marqueeBgColor, marqueeFontColor, marqueeFont, marqueeFontSize } = useQueue();
   const lastAnnouncedId = useRef<string | null>(null);
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const marqueeText = (marqueeMessage || "").trim();
@@ -31,10 +93,15 @@ const DisplayFrangos = () => {
   const marqueeDuration = 18 / Math.max(1, Math.min(4, marqueeSpeed || 1));
 
   const unlockAudio = () => {
-    // Toca um áudio silencioso para desbloquear o HTML5 Audio no Samsung
-    const a = new Audio('/audio/frases/senha.mp3');
-    a.volume = 0;
-    a.play().then(() => { a.pause(); setAudioUnlocked(true); }).catch(() => setAudioUnlocked(true));
+    try {
+      const ctx = getAudioCtx();
+      ctx.resume().then(() => {
+        setAudioUnlocked(true);
+        preloadAudio();
+      });
+    } catch {
+      setAudioUnlocked(true);
+    }
   };
 
   const toggleFullscreen = () => {
@@ -65,11 +132,17 @@ const DisplayFrangos = () => {
     speakPassword(current.code);
   }, [current?.id]);
 
+  const frangosQueue = queue.filter(i => i.type === 'frangos');
   const frangosHistory = calledHistory.filter(i => i.type === 'frangos');
+  const displayCurrent = current?.type === 'frangos' ? current : null;
+  const colCount = Math.min(Math.max(frangosQueue.length, 1), 6);
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden" onClick={!audioUnlocked ? unlockAudio : undefined}>
-      {/* Botão invisível para fullscreen — canto superior direito */}
+    <div
+      className="h-screen flex flex-col overflow-hidden select-none"
+      style={{ background: '#111827' }}
+      onClick={!audioUnlocked ? unlockAudio : undefined}
+    >
       <div
         onClick={e => { e.stopPropagation(); toggleFullscreen(); }}
         style={{ position: 'absolute', top: 0, right: 0, width: '60px', height: '60px', zIndex: 9999, cursor: 'default', opacity: 0 }}
@@ -87,74 +160,140 @@ const DisplayFrangos = () => {
           0% { transform: translateX(100vw); }
           100% { transform: translateX(-100%); }
         }
+        @keyframes pulse-card {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(249,115,22,0.4); }
+          50% { transform: scale(1.02); box-shadow: 0 0 30px 10px rgba(249,115,22,0.3); }
+        }
+        @keyframes pulse-card-priority {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
+          50% { transform: scale(1.02); box-shadow: 0 0 30px 10px rgba(59,130,246,0.3); }
+        }
       `}</style>
-      <div className="flex-1 min-h-0 p-[2vw] flex gap-[2vw] overflow-hidden">
-        <div className="w-[42%] min-w-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col">
-          <h3 className="text-[2.5vw] font-bold text-gray-700 mb-[1.5vh] text-center">Ultimas Chamadas</h3>
-          <div className="space-y-[1vh] h-full overflow-hidden">
-            {frangosHistory.length === 0 ? (
-              <p className="text-gray-400 text-center py-[2vh]">Nenhuma senha chamada</p>
-            ) : (
-              frangosHistory.slice(0, 8).map((item) => (
+
+      {/* Header */}
+      <div className="flex-shrink-0 flex items-center justify-between px-[3vw] py-[1.2vh] bg-orange-500">
+        <h1 className="text-[3vw] font-black text-white tracking-wider">🐔 FRANGOS</h1>
+        <div className="text-right">
+          <p className="text-[0.9vw] font-semibold text-orange-100 uppercase tracking-widest leading-none">Tempo médio de espera</p>
+          <p className="text-[2.2vw] font-black text-white leading-tight">{getAverageWaitTime('frangos') ?? '0 min'}</p>
+        </div>
+      </div>
+
+      {/* TOP HALF — Próximas Senhas */}
+      <div className="flex-1 min-h-0 flex flex-col px-[2vw] pt-[1.5vh] pb-[1vh] border-b border-gray-700">
+        <p className="text-[1.4vw] font-bold text-orange-400 uppercase tracking-widest text-center mb-[1.5vh]">
+          🔜 Próximas Senhas
+        </p>
+        <div className="flex-1 min-h-0 overflow-hidden">
+          {frangosQueue.length === 0 ? (
+            <div className="h-full flex items-center justify-center">
+              <p className="text-[2vw] text-gray-600 italic">Nenhuma senha na fila</p>
+            </div>
+          ) : (
+            <div
+              className="grid gap-[1.2vw] h-full content-center"
+              style={{ gridTemplateColumns: `repeat(${colCount}, 1fr)` }}
+            >
+              {frangosQueue.slice(0, 12).map((item, idx) => (
                 <div
                   key={item.id}
-                  className={`p-[1.5%] rounded-lg text-center border-2 ${
+                  className={`rounded-xl flex flex-col items-center justify-center py-[1.5vh] px-[0.5vw] border-2 ${
                     item.priority
-                      ? 'bg-blue-50 border-blue-300'
-                      : 'bg-orange-50 border-orange-300'
+                      ? 'bg-blue-900/40 border-blue-500'
+                      : 'bg-orange-900/30 border-orange-600'
                   }`}
                 >
-                  <div
-                    className={`text-[2.5vw] font-black ${
-                      item.priority ? 'text-blue-700' : 'text-orange-700'
-                    }`}
-                  >
+                  {idx === 0 && (
+                    <span className="text-[0.8vw] font-bold text-green-400 uppercase tracking-wider mb-[0.3vh]">Próxima</span>
+                  )}
+                  {item.priority && (
+                    <span className="text-[0.8vw] text-blue-300 mb-[0.2vh]">⭐ Preferencial</span>
+                  )}
+                  <span className={`text-[2.8vw] font-black leading-none ${
+                    item.priority ? 'text-blue-200' : 'text-orange-200'
+                  }`}>
                     {item.code}
-                  </div>
-                  <div className="text-[1vw] text-gray-500 mt-1">
-                    Chamada as {item.calledAt ? new Date(item.calledAt).toLocaleTimeString() : "--:--:--"}
-                  </div>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* BOTTOM HALF — Últimas Chamadas */}
+      <div className="flex-1 min-h-0 flex flex-col px-[2vw] pt-[1vh] pb-[1.5vh]">
+        <p className="text-[1.4vw] font-bold text-gray-400 uppercase tracking-widest text-center mb-[1.5vh]">
+          📢 Últimas Chamadas
+        </p>
+        <div className="flex-1 min-h-0 flex gap-[1.5vw] overflow-hidden">
+          {/* Senha atual — card grande com pulsação */}
+          <div
+            className={`flex-shrink-0 w-[22%] rounded-2xl flex flex-col items-center justify-center px-[1vw] py-[2vh] border-4 ${
+              displayCurrent?.priority
+                ? 'bg-blue-700 border-blue-400'
+                : displayCurrent
+                ? 'bg-orange-500 border-orange-400'
+                : 'bg-gray-800 border-gray-700'
+            }`}
+            style={displayCurrent ? {
+              animation: displayCurrent.priority
+                ? 'pulse-card-priority 2s ease-in-out infinite'
+                : 'pulse-card 2s ease-in-out infinite'
+            } : { borderStyle: 'dashed' }}
+          >
+            {displayCurrent ? (
+              <>
+                <span className="text-[1vw] font-bold text-white/70 uppercase tracking-widest mb-[0.5vh]">Senha Atual</span>
+                {displayCurrent.priority && (
+                  <span className="text-[0.9vw] text-white/70 mb-[0.3vh]">⭐ Preferencial</span>
+                )}
+                <span className="text-[6vw] font-black text-white leading-none">{displayCurrent.code}</span>
+                <span className="text-[0.8vw] text-white/50 mt-[0.5vh]">
+                  {displayCurrent.calledAt ? new Date(displayCurrent.calledAt).toLocaleTimeString() : '--:--:--'}
+                </span>
+              </>
+            ) : (
+              <span className="text-[1.8vw] text-gray-600 italic">Aguardando...</span>
+            )}
+          </div>
+          {/* Histórico — cards menores */}
+          <div className="flex-1 min-w-0 flex gap-[1vw] items-stretch overflow-hidden">
+            {frangosHistory.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-[1.5vw] text-gray-600 italic">Nenhuma senha chamada ainda</p>
+              </div>
+            ) : (
+              frangosHistory.slice(0, 7).map(item => (
+                <div
+                  key={item.id}
+                  className={`flex-1 rounded-xl flex flex-col items-center justify-center py-[1vh] px-[0.5vw] border-2 ${
+                    item.priority
+                      ? 'bg-blue-900/30 border-blue-600'
+                      : 'bg-orange-900/20 border-orange-700'
+                  }`}
+                >
+                  {item.priority && (
+                    <span className="text-[0.8vw] text-blue-400 mb-[0.2vh]">⭐</span>
+                  )}
+                  <span className={`text-[2.2vw] font-black leading-none ${
+                    item.priority ? 'text-blue-300' : 'text-orange-300'
+                  }`}>
+                    {item.code}
+                  </span>
+                  <span className="text-[0.75vw] text-gray-600 mt-[0.3vh]">
+                    {item.calledAt ? new Date(item.calledAt).toLocaleTimeString() : '--:--:--'}
+                  </span>
                 </div>
               ))
             )}
           </div>
         </div>
-
-        <div className="w-[58%] min-w-0 flex flex-col gap-[2vh]">
-          <div className="text-center">
-            <h1 className="text-[5vw] font-black text-gray-800 leading-none">FRANGOS</h1>
-          </div>
-
-          <div
-            className={`rounded-2xl px-[3%] py-[4vh] text-center flex-1 flex flex-col justify-center ${
-              current && current.type === 'frangos' && current.priority
-                ? 'bg-blue-600'
-                : 'bg-orange-500'
-            }`}
-          >
-            <h2 className="text-[2.5vw] font-bold text-white mb-[2vh]">Senha</h2>
-            {current && current.type === 'frangos' ? (
-              <div className="text-[15vw] leading-none font-black text-white animate-pulse">
-                {current.code}
-              </div>
-            ) : (
-              <div className="text-[5vw] font-black text-white/60">
-                Aguardando...
-              </div>
-            )}
-          </div>
-
-          <div className="rounded-2xl bg-yellow-400 px-[3%] py-[2vh] text-center border-4 border-yellow-500 shadow-lg">
-            <p className="text-[1.5vw] font-bold text-yellow-900 uppercase tracking-wider">⏱ Tempo médio de espera</p>
-            <p className="text-[4.5vw] font-black text-yellow-900 mt-[0.5vh]">
-              {getAverageWaitTime('frangos') ?? '0 min'}
-            </p>
-          </div>
-        </div>
       </div>
+
       {hasMarquee && (
         <div
-          className="h-[6vh] flex-shrink-0 overflow-hidden border-t-2 border-yellow-400 flex items-center"
+          className="h-[6vh] flex-shrink-0 overflow-hidden flex items-center"
           style={{ backgroundColor: marqueeBgColor || '#000000' }}
         >
           <span
