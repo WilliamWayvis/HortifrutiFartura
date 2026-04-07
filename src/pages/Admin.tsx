@@ -305,7 +305,7 @@ const Admin = () => {
 
   return (
     <>
-    <div className={`min-h-screen bg-background text-foreground p-8${darkMode ? ' dark' : ''}`}>
+    <div className={`min-h-screen bg-background text-foreground p-8 overflow-x-hidden${darkMode ? ' dark' : ''}`}>
       <div className="mx-auto max-w-6xl space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
