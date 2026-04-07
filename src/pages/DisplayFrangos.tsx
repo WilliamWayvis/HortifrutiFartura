@@ -125,7 +125,7 @@ const DisplayFrangos = () => {
   const displayCurrent = current?.type === 'frangos' ? current : null;
 
   return (
-    <div className="h-screen flex flex-col bg-white overflow-hidden" style={{ fontFamily: "'Nunito', 'Rounded Mplus 1c', ui-rounded, sans-serif" }} onClick={!audioUnlocked ? unlockAudio : undefined}>
+    <div className="h-screen flex flex-col bg-white overflow-hidden" onClick={!audioUnlocked ? unlockAudio : undefined}>
       <div
         onClick={e => { e.stopPropagation(); toggleFullscreen(); }}
         style={{ position: 'absolute', top: 0, right: 0, width: '60px', height: '60px', zIndex: 9999, cursor: 'default', opacity: 0 }}
@@ -152,7 +152,7 @@ const DisplayFrangos = () => {
 
           {/* BLOCO SUPERIOR: Proximas Senhas */}
           <div className="flex-1 min-h-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col overflow-hidden">
-            <h3 style={{ fontSize: 'clamp(12px,2vw,26px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Próximas Senhas</h3>
+            <h3 style={{ fontSize: 'clamp(16px,2.5vw,34px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Próximas Senhas</h3>
             <div className="flex-1 min-h-0 flex flex-col gap-[1%]">
               {frangosQueue.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
@@ -189,7 +189,7 @@ const DisplayFrangos = () => {
 
           {/* BLOCO INFERIOR: Ultimas Chamadas */}
           <div className="flex-1 min-h-0 bg-gray-50 rounded-2xl p-[2%] border-2 border-gray-300 flex flex-col overflow-hidden">
-            <h3 style={{ fontSize: 'clamp(12px,2vw,26px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Últimas Chamadas</h3>
+            <h3 style={{ fontSize: 'clamp(16px,2.5vw,34px)' }} className="font-bold text-gray-700 mb-[1.5%] text-center flex-shrink-0">Últimas Chamadas</h3>
             <div className="flex-1 min-h-0 flex flex-col gap-[1%]">
               {frangosHistory.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
