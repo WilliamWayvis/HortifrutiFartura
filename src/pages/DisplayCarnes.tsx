@@ -188,7 +188,7 @@ const DisplayCarnes = () => {
           <div className="rounded-2xl bg-yellow-400 px-[3%] py-[2vh] text-center border-4 border-yellow-500 shadow-lg">
             <p className="text-[1.5vw] font-bold text-yellow-900 uppercase tracking-wider">⏱ Tempo médio de espera</p>
             <p className="text-[4.5vw] font-black text-yellow-900 mt-[0.5vh]">
-              {getAverageWaitTime('carnes') ?? (carnesHistory.length === 0 ? 'Aguardando dados...' : 'Calculando...')}
+              {getAverageWaitTime('carnes') ?? '0 min'}
             </p>
           </div>
         </div>
