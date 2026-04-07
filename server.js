@@ -202,6 +202,50 @@ app.post('/reset', (req, res) => {
   res.json({});
 });
 
+// ── Setup TV via QR Code ────────────────────────────────────────────────────
+// Mapa de tokens pendentes: token -> { display, createdAt }
+const setupTokens = {};
+
+const DISPLAY_ROUTES = {
+  frangos: '/display/frangos',
+  carnes: '/display/acougue',
+  totem: '/',
+  admin: '/admin',
+};
+
+// Gera um token de 6 chars para a TV aguardar
+app.post('/setup/token', (req, res) => {
+  const token = Math.random().toString(36).substring(2, 8).toUpperCase();
+  setupTokens[token] = { display: null, createdAt: Date.now() };
+  // Expira em 10 minutos
+  setTimeout(() => delete setupTokens[token], 10 * 60 * 1000);
+  res.json({ token });
+});
+
+// Celular escaneia o QR e envia qual display a TV deve mostrar
+// GET /setup/assign?token=ABCD12&display=frangos
+app.get('/setup/assign', (req, res) => {
+  const { token, display } = req.query;
+  if (!token || !setupTokens[token]) {
+    return res.status(400).send('<h2>Token inválido ou expirado. Volte para /setup na TV e tente novamente.</h2>');
+  }
+  if (!DISPLAY_ROUTES[display]) {
+    return res.status(400).send('<h2>Display inválido.</h2>');
+  }
+  setupTokens[token].display = display;
+  res.send(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>TV Configurada</title></head><body style="font-family:sans-serif;text-align:center;padding:2rem"><h1>✅ Pronto!</h1><p>A TV foi direcionada para <strong>${display}</strong>.</p><p>Pode fechar esta página.</p></body></html>`);
+});
+
+// TV faz polling neste endpoint aguardando ser configurada
+app.get('/setup/check/:token', (req, res) => {
+  const entry = setupTokens[req.params.token];
+  if (!entry) return res.json({ status: 'expired' });
+  if (!entry.display) return res.json({ status: 'waiting' });
+  const route = DISPLAY_ROUTES[entry.display];
+  delete setupTokens[req.params.token];
+  res.json({ status: 'ready', route });
+});
+
 // Serve frontend build
 app.use(express.static(join(__dirname, 'dist')));
 // SPA fallback — must come after all API routes

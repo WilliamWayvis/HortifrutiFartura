@@ -9,6 +9,7 @@ import Display from "./pages/Display";
 import DisplayFrangos from "./pages/DisplayFrangos";
 import DisplayCarnes from "./pages/DisplayCarnes";
 import Admin from "./pages/Admin";
+import Setup from "./pages/Setup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => {
               <Route path="/display/carnes" element={<DisplayCarnes />} />
               <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/setup" element={<Setup />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
