@@ -31,6 +31,7 @@ const App = () => {
               <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/setup" element={<Setup />} />
+              <Route path="/tv" element={<Setup />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

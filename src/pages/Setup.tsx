@@ -8,8 +8,6 @@ const BASE = import.meta.env.VITE_API_URL ?? window.location.origin;
 const DISPLAYS = [
   { key: "frangos", label: "📺 TV Frangos", color: "#f97316", route: "/display/frangos" },
   { key: "carnes", label: "🥩 TV Açougue", color: "#ef4444", route: "/display/acougue" },
-  { key: "totem", label: "🎫 Totem", color: "#22c55e", route: "/" },
-  { key: "admin", label: "⚙️ Admin", color: "#6366f1", route: "/admin" },
 ];
 
 const Setup = () => {
